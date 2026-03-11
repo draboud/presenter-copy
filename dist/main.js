@@ -908,6 +908,7 @@
     const clicked = e.target.closest(".ctrl-btn-back");
     if (!clicked) return;
     flashBlackout();
+    resetAllSectionVids();
     data_default.setDataVidBackgroundImg();
     data_default.setDataVidPoster();
     data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");

@@ -301,6 +301,7 @@ global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn-back");
   if (!clicked) return;
   global.flashBlackout();
+  global.resetAllSectionVids();
   // Data.setLastActiveView(); //for the bckgrnd img
   Data.setDataVidBackgroundImg();
   // Data.setActiveView(clicked.textContent); //for the poster
