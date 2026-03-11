@@ -277,7 +277,8 @@ global.mainWrapper.addEventListener("click", function (e) {
       Features.vidPlay(clicked);
       break;
     case "data":
-      clearAllTimers();
+      // clearAllTimers();
+      global.blackout.classList.remove("off");
       Data.hideActiveCtrlBtnWrapper();
       Data.ctrlBtnIndex = global.getCtrlBtnIndex(clicked);
       Data.setLastActiveView();

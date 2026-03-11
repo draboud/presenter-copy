@@ -885,7 +885,7 @@
         features_default.vidPlay(clicked);
         break;
       case "data":
-        clearAllTimers();
+        blackout.classList.remove("off");
         data_default.hideActiveCtrlBtnWrapper();
         data_default.ctrlBtnIndex = getCtrlBtnIndex(clicked);
         data_default.setLastActiveView();
