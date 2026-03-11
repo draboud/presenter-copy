@@ -746,8 +746,6 @@
       case "data":
         flashBlackout();
         data_default.setLastActiveView();
-        data_default.setActiveView();
-        data_default.setDataVidBackgroundImg();
         data_default.showIntroText();
         data_default.hideBackBtn();
         data_default.showCtrlBtnWrapper();
@@ -909,7 +907,7 @@
   mainWrapper.addEventListener("click", function(e) {
     const clicked = e.target.closest(".ctrl-btn-back");
     if (!clicked) return;
-    flashBlackout();
+    blackout.classList.remove("off");
     data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");
     data_default.txtOrImg = "image";
     data_default.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
