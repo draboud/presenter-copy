@@ -248,6 +248,11 @@ class Data {
       this.setDataVidBackgroundImg();
       this.dataVidPlay();
     } else {
+      global.getActiveVid().closest(".vid-wrapper").style.backgroundImage =
+        "none";
+      global.getActiveVid().closest(".vid-wrapper").style.backgroundColor =
+        "black";
+      console.log(global.getActiveVid().closest(".vid-wrapper"));
       this.activeCtrlBtnWrapper.classList.remove("active");
       this.activeDataWrapper
         .querySelector(".txt-img-btn")

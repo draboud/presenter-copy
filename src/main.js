@@ -86,8 +86,8 @@ Navbar.navMenu.addEventListener("click", function (e) {
     el.classList.contains("active"),
   ).classList[1];
   if (clickedSectionName !== lastActiveSectionName) {
-    clearAllTimers();
     global.blackout.classList.remove("off");
+    clearAllTimers();
     Navbar.closeNavMenu();
     global.deactivateCurrentBtns();
     global.disablePause();
@@ -334,11 +334,11 @@ global.allVids.forEach(function (el) {
 //FUNCTIONS..............................................................
 //init
 const init = function () {
+  global.blackout.classList.remove("off");
   Navbar.navComponent.classList.remove("active");
   Navbar.allNavDropdowns.forEach(function (el) {
     el.classList.remove("active");
   });
-  global.blackout.classList.remove("off");
   global.setActiveSection("features");
   global.setActiveVid();
   Features.featuresEndisCancelled = false;
