@@ -716,6 +716,8 @@
     const clicked = e.target.closest(".nav_menu_link");
     if (!clicked) return;
     const clickedSectionName = clicked.classList[1];
+    getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
+    getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
     lastActiveSectionName = allSections.find(
       (el) => el.classList.contains("active")
     ).classList[1];

@@ -82,6 +82,8 @@ Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".nav_menu_link");
   if (!clicked) return;
   const clickedSectionName = clicked.classList[1];
+  global.getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
+  global.getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
   lastActiveSectionName = global.allSections.find((el) =>
     el.classList.contains("active"),
   ).classList[1];
