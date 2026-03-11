@@ -576,6 +576,8 @@
         this.setDataVidBackgroundImg();
         this.dataVidPlay();
       } else {
+        getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
+        getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
         this.activeCtrlBtnWrapper.classList.remove("active");
         this.activeDataWrapper.querySelector(".txt-img-btn").classList.add("active");
         this.dimmer.classList.add("active");
@@ -716,8 +718,6 @@
     const clicked = e.target.closest(".nav_menu_link");
     if (!clicked) return;
     const clickedSectionName = clicked.classList[1];
-    getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
-    getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
     lastActiveSectionName = allSections.find(
       (el) => el.classList.contains("active")
     ).classList[1];
@@ -907,6 +907,9 @@
   mainWrapper.addEventListener("click", function(e) {
     const clicked = e.target.closest(".ctrl-btn-back");
     if (!clicked) return;
+    flashBlackout();
+    data_default.setDataVidBackgroundImg();
+    data_default.setDataVidPoster();
     data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");
     data_default.txtOrImg = "image";
     data_default.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";

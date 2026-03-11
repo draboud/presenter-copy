@@ -82,8 +82,8 @@ Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".nav_menu_link");
   if (!clicked) return;
   const clickedSectionName = clicked.classList[1];
-  global.getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
-  global.getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
+  // global.getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
+  // global.getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
   lastActiveSectionName = global.allSections.find((el) =>
     el.classList.contains("active"),
   ).classList[1];
@@ -300,7 +300,12 @@ global.mainWrapper.addEventListener("click", function (e) {
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn-back");
   if (!clicked) return;
-  // global.flashBlackout();
+  global.flashBlackout();
+  // Data.setLastActiveView(); //for the bckgrnd img
+  Data.setDataVidBackgroundImg();
+  // Data.setActiveView(clicked.textContent); //for the poster
+  // global.setActiveVid();
+  Data.setDataVidPoster();
   // global.blackout.classList.remove("off");
   Data.activeDataWrapper
     .querySelector(".txt-img-btn")
