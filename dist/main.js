@@ -576,8 +576,6 @@
         this.setDataVidBackgroundImg();
         this.dataVidPlay();
       } else {
-        getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
-        getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
         this.activeCtrlBtnWrapper.classList.remove("active");
         this.activeDataWrapper.querySelector(".txt-img-btn").classList.add("active");
         this.dimmer.classList.add("active");
