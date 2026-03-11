@@ -909,6 +909,7 @@
   mainWrapper.addEventListener("click", function(e) {
     const clicked = e.target.closest(".ctrl-btn-back");
     if (!clicked) return;
+    flashBlackout();
     data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");
     data_default.txtOrImg = "image";
     data_default.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";

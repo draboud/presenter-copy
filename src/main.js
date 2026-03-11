@@ -298,6 +298,7 @@ global.mainWrapper.addEventListener("click", function (e) {
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn-back");
   if (!clicked) return;
+  global.flashBlackout();
   Data.activeDataWrapper
     .querySelector(".txt-img-btn")
     .classList.remove("active");
