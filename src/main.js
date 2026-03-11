@@ -112,7 +112,7 @@ Navbar.navMenu.addEventListener("click", function (e) {
     case "data":
       global.flashBlackout();
       Data.setLastActiveView();
-      Data.setActiveView();
+      // Data.setActiveView();
       Data.setDataVidBackgroundImg();
       Data.showIntroText();
       Data.hideBackBtn();
@@ -298,7 +298,7 @@ global.mainWrapper.addEventListener("click", function (e) {
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn-back");
   if (!clicked) return;
-  global.flashBlackout();
+  // global.flashBlackout();
   // global.blackout.classList.remove("off");
   Data.activeDataWrapper
     .querySelector(".txt-img-btn")
