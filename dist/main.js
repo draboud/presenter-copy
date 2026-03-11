@@ -578,7 +578,6 @@
       } else {
         getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
         getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
-        console.log(getActiveVid().closest(".vid-wrapper"));
         this.activeCtrlBtnWrapper.classList.remove("active");
         this.activeDataWrapper.querySelector(".txt-img-btn").classList.add("active");
         this.dimmer.classList.add("active");
