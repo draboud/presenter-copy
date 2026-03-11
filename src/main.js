@@ -111,7 +111,7 @@ Navbar.navMenu.addEventListener("click", function (e) {
       break;
     case "data":
       global.flashBlackout();
-      Data.setLastActiveView();
+      // Data.setLastActiveView();
       // Data.setActiveView();
       // Data.setDataVidBackgroundImg();
       Data.showIntroText();

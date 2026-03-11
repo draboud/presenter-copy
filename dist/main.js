@@ -745,7 +745,6 @@
         break;
       case "data":
         flashBlackout();
-        data_default.setLastActiveView();
         data_default.showIntroText();
         data_default.hideBackBtn();
         data_default.showCtrlBtnWrapper();
