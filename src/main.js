@@ -326,11 +326,11 @@ global.mainWrapper.addEventListener("click", function (e) {
   Data.dimmer.classList.remove("active");
   Data.showIntroText();
   Data.hideBackBtn();
-  Data.showCtrlBtnWrapper();
 
   //setting vid element...
   Data.setDataVidBackgroundImg();
   global.clearSectionVidSrc(); //reveal poster
+  Data.showCtrlBtnWrapper();
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................

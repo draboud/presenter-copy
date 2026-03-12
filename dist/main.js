@@ -907,9 +907,9 @@
     data_default.dimmer.classList.remove("active");
     data_default.showIntroText();
     data_default.hideBackBtn();
-    data_default.showCtrlBtnWrapper();
     data_default.setDataVidBackgroundImg();
     clearSectionVidSrc();
+    data_default.showCtrlBtnWrapper();
   });
   allVids.forEach(function(el) {
     el.addEventListener("ended", function() {
