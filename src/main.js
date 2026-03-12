@@ -291,6 +291,8 @@ global.mainWrapper.addEventListener("click", function (e) {
       // global.blackout.classList.remove("off");
 
       //setting UI and logic...
+      Data.setLastActiveView(); //for the bckgrnd img
+      Data.setDataVidBackgroundImg();
       Data.hideActiveCtrlBtnWrapper();
       Data.ctrlBtnIndex = global.getCtrlBtnIndex(clicked);
 

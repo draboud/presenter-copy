@@ -880,6 +880,8 @@
         features_default.vidPlay(clicked);
         break;
       case "data":
+        data_default.setLastActiveView();
+        data_default.setDataVidBackgroundImg();
         data_default.hideActiveCtrlBtnWrapper();
         data_default.ctrlBtnIndex = getCtrlBtnIndex(clicked);
         data_default.setDataVidStartAndEnd(clicked);
