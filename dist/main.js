@@ -740,7 +740,7 @@
         features_default.playFeaturesIntro();
         break;
       case "data":
-        blackout.classList.remove("off");
+        flashBlackout();
         data_default.dimmer.classList.remove("active");
         data_default.txtOrImg = "image";
         data_default.txtImgBtn.textContent = "image";
@@ -752,7 +752,6 @@
         clearSectionVidSrc();
         data_default.setLastActiveView();
         data_default.setDataVidBackgroundImg();
-        blackout.classList.add("off");
         break;
       case "sequence":
         flashBlackout();

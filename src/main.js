@@ -112,8 +112,8 @@ Navbar.navMenu.addEventListener("click", function (e) {
       Features.playFeaturesIntro();
       break;
     case "data":
-      // hide
-      global.blackout.classList.remove("off");
+      // keep consistent flash for all nav tabs
+      global.flashBlackout();
 
       //setting UI and logic...
       Data.dimmer.classList.remove("active");
@@ -130,8 +130,6 @@ Navbar.navMenu.addEventListener("click", function (e) {
       Data.setLastActiveView(); //for bckgrnd img
       Data.setDataVidBackgroundImg();
 
-      //reveal
-      global.blackout.classList.add("off");
       break;
     case "sequence":
       // global.blackout.classList.add("off");
