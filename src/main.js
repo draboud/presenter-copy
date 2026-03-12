@@ -1,4 +1,4 @@
-console.log("test-1");
+console.log("testing...");
 import { START_UI_REVEAL } from "./0-config";
 import * as global from "./0-global";
 import Navbar from "./0-navbar";
@@ -112,20 +112,26 @@ Navbar.navMenu.addEventListener("click", function (e) {
       Features.playFeaturesIntro();
       break;
     case "data":
-      global.flashBlackout();
-      Data.setLastActiveView();
-      // Data.setActiveView();
-      Data.setDataVidBackgroundImg();
-      Data.showIntroText();
-      Data.hideBackBtn();
-      Data.showCtrlBtnWrapper();
-      Data.resetAllDataSheets();
-      Data.hideAllData();
+      // hide
+      global.blackout.classList.remove("off");
+
+      //setting UI and logic...
+      Data.dimmer.classList.remove("active");
       Data.txtOrImg = "image";
       Data.txtImgBtn.textContent = "image";
-      Data.dimmer.classList.remove("active");
-      Data.activeView = Data.viewOptsBtn.textContent;
-      global.clearSectionVidSrc();
+      Data.hideBackBtn();
+      Data.hideAllData();
+      Data.resetAllDataSheets();
+      Data.showIntroText();
+      Data.showCtrlBtnWrapper();
+
+      //setting vid element...
+      global.clearSectionVidSrc(); //reveal poster
+      Data.setLastActiveView(); //for bckgrnd img
+      Data.setDataVidBackgroundImg();
+
+      //reveal
+      global.blackout.classList.add("off");
       break;
     case "sequence":
       // global.blackout.classList.add("off");
@@ -235,24 +241,28 @@ global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".opts-menu_link");
   if (!clicked) return;
   if (clicked.textContent === Data.activeView) return;
+
+  //setting UI and logic...
+  global.disableNavLinksAndNavBtn();
+  clicked.classList.add("active"); //for Data.setActiveViewBtnIndex
+  Data.setActiveViewBtnIndex();
+  Data.hideViewOpts();
+  Data.setViewOptsBtnText(clicked.textContent);
+  Data.setActiveDataWrapper();
+  Data.setActiveCtrlBtnWrapper();
+
+  //setting vid element...
   global
     .getActiveSection()
     .querySelectorAll(".vid-code")
     .forEach(function (el) {
       el.classList.add("active");
-    });
-  clicked.classList.add("active");
-  Data.setViewOptsBtnText(clicked.textContent);
-  Data.setActiveViewBtnIndex();
-  Data.setActiveDataWrapper();
+    }); //so global.setActiveVid can pick dt or mp from actives
   Data.setLastActiveView(); //for the bckgrnd img
   Data.setDataVidBackgroundImg();
   Data.setActiveView(clicked.textContent); //for the poster
-  global.setActiveVid();
-  Data.setDataVidPoster();
-  Data.setActiveCtrlBtnWrapper();
-  Data.hideViewOpts();
-  global.disableNavLinksAndNavBtn();
+
+  //play vid
   Data.setViewVidStartAndEnd();
   Data.dataVidPlay();
 });
@@ -277,17 +287,16 @@ global.mainWrapper.addEventListener("click", function (e) {
       Features.vidPlay(clicked);
       break;
     case "data":
-      // clearAllTimers();
+      //hide
       global.blackout.classList.remove("off");
+
+      //setting UI and logic...
       Data.hideActiveCtrlBtnWrapper();
       Data.ctrlBtnIndex = global.getCtrlBtnIndex(clicked);
-      Data.setLastActiveView();
-      global.setActiveVid();
+
+      //play
       Data.setDataVidStartAndEnd(clicked);
-      Data.setDataVidBackgroundImg();
-      Data.setDataVidPoster();
-      global.getActiveVid().parentElement.style.opacity = 0;
-      Data.dataVidPlay();
+      Data.dataVidPlay(); //removes blackout in global.playRange
       break;
     case "sequence":
       clearAllTimers();
@@ -301,26 +310,28 @@ global.mainWrapper.addEventListener("click", function (e) {
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn-back");
   if (!clicked) return;
-  global.flashBlackout();
-  global.resetAllSectionVids();
-  // Data.setLastActiveView(); //for the bckgrnd img
-  Data.setDataVidBackgroundImg();
-  // Data.setActiveView(clicked.textContent); //for the poster
-  // global.setActiveVid();
-  Data.setDataVidPoster();
-  // global.blackout.classList.remove("off");
+  //hide
+  global.blackout.classList.remove("off");
+
+  //setting UI and logic...
+  Data.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
+  Data.txtOrImg = "image";
   Data.activeDataWrapper
     .querySelector(".txt-img-btn")
     .classList.remove("active");
-  Data.txtOrImg = "image";
-  Data.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
-  Data.dimmer.classList.remove("active");
-  Data.resetAllDataSheets();
   Data.hideAllData();
+  Data.resetAllDataSheets();
+  Data.dimmer.classList.remove("active");
   Data.showIntroText();
   Data.hideBackBtn();
   Data.showCtrlBtnWrapper();
-  global.clearSectionVidSrc();
+
+  //setting vid element...
+  Data.setDataVidBackgroundImg();
+  global.clearSectionVidSrc(); //reveal poster
+
+  //reveal
+  global.blackout.classList.add("off");
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................

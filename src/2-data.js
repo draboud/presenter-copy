@@ -233,33 +233,29 @@ class Data {
   };
   vidEnd = function () {
     if (this.viewVidFlag && !this.viewChainFlag) {
-      this.setLastActiveView(); //for the bckgrnd img
-      this.setDataVidBackgroundImg();
-      global.getActiveVid().parentElement.classList.remove("active");
-      this.setDataVidPoster();
+      this.setDataVidPoster(); //done here so poster doesn't appear earlier
       this.showActiveCtrlBtnWrapper();
       this.showIntroText();
       global.enableNavLinksAndNavBtn();
     } else if (this.viewChainFlag) {
       this.viewChainFlag = false;
       this.setLastActiveView("view-a");
-      this.setDataVidPoster(this.lastActiveView.view);
-      this.setViewVidStartAndEnd();
       this.setDataVidBackgroundImg();
+      this.setViewVidStartAndEnd();
       this.dataVidPlay();
     } else {
+      this.dimmer.classList.add("active");
+      this.activeDataWrapper
+        .querySelector(".txt-img-btn")
+        .classList.add("active");
+      this.showData(this.ctrlBtnIndex);
+      this.showBackBtn();
+
+      //set bckgrnd img to black to prevent flash of image when changing nav
       global.getActiveVid().closest(".vid-wrapper").style.backgroundImage =
         "none";
       global.getActiveVid().closest(".vid-wrapper").style.backgroundColor =
         "black";
-      // console.log(global.getActiveVid().closest(".vid-wrapper"));
-      this.activeCtrlBtnWrapper.classList.remove("active");
-      this.activeDataWrapper
-        .querySelector(".txt-img-btn")
-        .classList.add("active");
-      this.dimmer.classList.add("active");
-      this.showData(this.ctrlBtnIndex);
-      this.showBackBtn();
     }
   };
   hideActiveCtrlBtnWrapper = function () {

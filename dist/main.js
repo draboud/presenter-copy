@@ -117,15 +117,10 @@
     });
   };
   var playRange = function(videoCurrentTime) {
+    const vidCode = activeVid.parentElement;
     const targetStart = videoCurrentTime || startTime;
-    activeVid.parentElement.style.opacity = "0";
-    const source = activeVid.querySelector("source");
-    const dataSrc = source ? source.getAttribute("data-src") : null;
-    if (dataSrc && activeVid.src !== dataSrc) {
-      activeVid.pause();
-      activeVid.src = dataSrc;
-      activeVid.load();
-    }
+    if (vidCode) vidCode.style.opacity = "0";
+    activeVid.removeEventListener("timeupdate", activeVid._currentMonitor);
     const monitorTime = () => {
       if (activeVid.currentTime >= endTime - 0.15) {
         activeVid.removeEventListener("timeupdate", monitorTime);
@@ -134,35 +129,42 @@
         activeVid.dispatchEvent(new Event("ended"));
       }
     };
+    activeVid._currentMonitor = monitorTime;
+    const source = activeVid.querySelector("source");
+    const dataSrc = source ? source.getAttribute("data-src") : null;
+    if (dataSrc && activeVid.src !== dataSrc) {
+      activeVid.pause();
+      activeVid.src = dataSrc;
+      activeVid.load();
+    }
     const startPlaybackSequence = async () => {
       try {
         activeVid.currentTime = targetStart;
-        activeVid.addEventListener(
-          "seeked",
-          async () => {
+        const pollForFrame = () => {
+          if (activeVid.currentTime > targetStart) {
             requestAnimationFrame(() => {
-              requestAnimationFrame(async () => {
-                activeVid.parentElement.style.opacity = "1";
+              requestAnimationFrame(() => {
+                if (vidCode) vidCode.style.opacity = "1";
                 if (typeof blackout !== "undefined")
                   blackout.classList.add("off");
-                await activeVid.play();
-                activeVid.addEventListener("timeupdate", monitorTime);
               });
             });
-          },
-          { once: true }
-        );
+          } else if (!activeVid.paused) {
+            requestAnimationFrame(pollForFrame);
+          }
+        };
+        activeVid.addEventListener("timeupdate", monitorTime);
+        await activeVid.play();
+        pollForFrame();
       } catch (e) {
-        console.error("Playback sequence failed", e);
+        console.warn("Playback failed:", e);
+        if (vidCode) vidCode.style.opacity = "1";
       }
     };
-    if (activeVid.readyState >= 1) {
+    if (activeVid.readyState >= 3) {
       startPlaybackSequence();
     } else {
-      activeVid.addEventListener("loadedmetadata", startPlaybackSequence, {
-        once: true
-      });
-      activeVid.addEventListener("loadeddata", startPlaybackSequence, {
+      activeVid.addEventListener("canplay", startPlaybackSequence, {
         once: true
       });
     }
@@ -561,9 +563,6 @@
     };
     vidEnd = function() {
       if (this.viewVidFlag && !this.viewChainFlag) {
-        this.setLastActiveView();
-        this.setDataVidBackgroundImg();
-        getActiveVid().parentElement.classList.remove("active");
         this.setDataVidPoster();
         this.showActiveCtrlBtnWrapper();
         this.showIntroText();
@@ -571,18 +570,16 @@
       } else if (this.viewChainFlag) {
         this.viewChainFlag = false;
         this.setLastActiveView("view-a");
-        this.setDataVidPoster(this.lastActiveView.view);
-        this.setViewVidStartAndEnd();
         this.setDataVidBackgroundImg();
+        this.setViewVidStartAndEnd();
         this.dataVidPlay();
       } else {
-        getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
-        getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
-        this.activeCtrlBtnWrapper.classList.remove("active");
-        this.activeDataWrapper.querySelector(".txt-img-btn").classList.add("active");
         this.dimmer.classList.add("active");
+        this.activeDataWrapper.querySelector(".txt-img-btn").classList.add("active");
         this.showData(this.ctrlBtnIndex);
         this.showBackBtn();
+        getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
+        getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
       }
     };
     hideActiveCtrlBtnWrapper = function() {
@@ -658,7 +655,7 @@
   var sequence_default = new Sequence();
 
   // src/main.js
-  console.log("test-1");
+  console.log("testing...");
   startBtn = document.querySelector(".start-btn-wrapper");
   iosConfigWrap = document.querySelector(".ios-config-wrap");
   configBtnWrap = document.querySelector(".config-btn-wrap");
@@ -743,19 +740,19 @@
         features_default.playFeaturesIntro();
         break;
       case "data":
-        flashBlackout();
-        data_default.setLastActiveView();
-        data_default.setDataVidBackgroundImg();
-        data_default.showIntroText();
-        data_default.hideBackBtn();
-        data_default.showCtrlBtnWrapper();
-        data_default.resetAllDataSheets();
-        data_default.hideAllData();
+        blackout.classList.remove("off");
+        data_default.dimmer.classList.remove("active");
         data_default.txtOrImg = "image";
         data_default.txtImgBtn.textContent = "image";
-        data_default.dimmer.classList.remove("active");
-        data_default.activeView = data_default.viewOptsBtn.textContent;
+        data_default.hideBackBtn();
+        data_default.hideAllData();
+        data_default.resetAllDataSheets();
+        data_default.showIntroText();
+        data_default.showCtrlBtnWrapper();
         clearSectionVidSrc();
+        data_default.setLastActiveView();
+        data_default.setDataVidBackgroundImg();
+        blackout.classList.add("off");
         break;
       case "sequence":
         flashBlackout();
@@ -850,21 +847,19 @@
     const clicked = e.target.closest(".opts-menu_link");
     if (!clicked) return;
     if (clicked.textContent === data_default.activeView) return;
+    disableNavLinksAndNavBtn();
+    clicked.classList.add("active");
+    data_default.setActiveViewBtnIndex();
+    data_default.hideViewOpts();
+    data_default.setViewOptsBtnText(clicked.textContent);
+    data_default.setActiveDataWrapper();
+    data_default.setActiveCtrlBtnWrapper();
     getActiveSection().querySelectorAll(".vid-code").forEach(function(el) {
       el.classList.add("active");
     });
-    clicked.classList.add("active");
-    data_default.setViewOptsBtnText(clicked.textContent);
-    data_default.setActiveViewBtnIndex();
-    data_default.setActiveDataWrapper();
     data_default.setLastActiveView();
     data_default.setDataVidBackgroundImg();
     data_default.setActiveView(clicked.textContent);
-    setActiveVid();
-    data_default.setDataVidPoster();
-    data_default.setActiveCtrlBtnWrapper();
-    data_default.hideViewOpts();
-    disableNavLinksAndNavBtn();
     data_default.setViewVidStartAndEnd();
     data_default.dataVidPlay();
   });
@@ -888,12 +883,7 @@
         blackout.classList.remove("off");
         data_default.hideActiveCtrlBtnWrapper();
         data_default.ctrlBtnIndex = getCtrlBtnIndex(clicked);
-        data_default.setLastActiveView();
-        setActiveVid();
         data_default.setDataVidStartAndEnd(clicked);
-        data_default.setDataVidBackgroundImg();
-        data_default.setDataVidPoster();
-        getActiveVid().parentElement.style.opacity = 0;
         data_default.dataVidPlay();
         break;
       case "sequence":
@@ -907,20 +897,19 @@
   mainWrapper.addEventListener("click", function(e) {
     const clicked = e.target.closest(".ctrl-btn-back");
     if (!clicked) return;
-    flashBlackout();
-    resetAllSectionVids();
-    data_default.setDataVidBackgroundImg();
-    data_default.setDataVidPoster();
-    data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");
-    data_default.txtOrImg = "image";
+    blackout.classList.remove("off");
     data_default.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
-    data_default.dimmer.classList.remove("active");
-    data_default.resetAllDataSheets();
+    data_default.txtOrImg = "image";
+    data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");
     data_default.hideAllData();
+    data_default.resetAllDataSheets();
+    data_default.dimmer.classList.remove("active");
     data_default.showIntroText();
     data_default.hideBackBtn();
     data_default.showCtrlBtnWrapper();
+    data_default.setDataVidBackgroundImg();
     clearSectionVidSrc();
+    blackout.classList.add("off");
   });
   allVids.forEach(function(el) {
     el.addEventListener("ended", function() {

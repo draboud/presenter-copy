@@ -105,17 +105,18 @@ export const resetAllSectionVids = function () {
     el.pause();
   });
 };
+
 export const playRange = function (videoCurrentTime) {
+  // const activeVid = global.getActiveVid();
+  const vidCode = activeVid.parentElement;
   const targetStart = videoCurrentTime || startTime;
-  activeVid.parentElement.style.opacity = "0";
-  const source = activeVid.querySelector("source");
-  const dataSrc = source ? source.getAttribute("data-src") : null;
-  // REVISION: Set src directly on the video element for better event reliability
-  if (dataSrc && activeVid.src !== dataSrc) {
-    activeVid.pause();
-    activeVid.src = dataSrc; // Setting src on video directly is more robust than <source>
-    activeVid.load();
-  }
+
+  // 1. HIDDEN STATE: Instant hide to reveal vid-wrapper background image
+  if (vidCode) vidCode.style.opacity = "0";
+
+  // Clear any existing timeupdate monitors
+  activeVid.removeEventListener("timeupdate", activeVid._currentMonitor);
+
   const monitorTime = () => {
     if (activeVid.currentTime >= endTime - 0.15) {
       activeVid.removeEventListener("timeupdate", monitorTime);
@@ -124,40 +125,56 @@ export const playRange = function (videoCurrentTime) {
       activeVid.dispatchEvent(new Event("ended"));
     }
   };
+  activeVid._currentMonitor = monitorTime;
+
+  // Source handling
+  const source = activeVid.querySelector("source");
+  const dataSrc = source ? source.getAttribute("data-src") : null;
+  if (dataSrc && activeVid.src !== dataSrc) {
+    activeVid.pause();
+    activeVid.src = dataSrc;
+    activeVid.load();
+  }
+
   const startPlaybackSequence = async () => {
-    // console.log("SUCCESS: entered startPlaybackSequence");
     try {
       activeVid.currentTime = targetStart;
-      activeVid.addEventListener(
-        "seeked",
-        async () => {
+
+      // 2. THE FAIL-SAFE REVEAL
+      // We poll for physical playhead movement. Once it moves,
+      // the "black buffer" is guaranteed to be gone.
+      const pollForFrame = () => {
+        if (activeVid.currentTime > targetStart) {
+          // Double RAF is the final guard for the GPU paint cycle
           requestAnimationFrame(() => {
-            requestAnimationFrame(async () => {
-              activeVid.parentElement.style.opacity = "1";
+            requestAnimationFrame(() => {
+              if (vidCode) vidCode.style.opacity = "1";
               if (typeof blackout !== "undefined")
                 blackout.classList.add("off");
-              await activeVid.play();
-              activeVid.addEventListener("timeupdate", monitorTime);
             });
           });
-        },
-        { once: true },
-      );
+        } else if (!activeVid.paused) {
+          // If still at targetStart but playing, check again next frame
+          requestAnimationFrame(pollForFrame);
+        }
+      };
+
+      // 3. START
+      activeVid.addEventListener("timeupdate", monitorTime);
+      await activeVid.play();
+      pollForFrame(); // Start checking for the first real frame
     } catch (e) {
-      console.error("Playback sequence failed", e);
+      console.warn("Playback failed:", e);
+      // Fallback: show video anyway if play() fails (e.g. autplay blocked)
+      if (vidCode) vidCode.style.opacity = "1";
     }
   };
-  // REVISION: Listen for BOTH loadedmetadata and loadeddata (first frame ready)
-  // and check readyState immediately.
-  if (activeVid.readyState >= 1) {
+
+  // Wait for data (readyState 3 is HAVE_FUTURE_DATA)
+  if (activeVid.readyState >= 3) {
     startPlaybackSequence();
   } else {
-    // console.log("Waiting for metadata or data...");
-    activeVid.addEventListener("loadedmetadata", startPlaybackSequence, {
-      once: true,
-    });
-    // Backup: some browsers skip metadata and go straight to loadeddata
-    activeVid.addEventListener("loadeddata", startPlaybackSequence, {
+    activeVid.addEventListener("canplay", startPlaybackSequence, {
       once: true,
     });
   }
