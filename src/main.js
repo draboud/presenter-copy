@@ -82,8 +82,6 @@ Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".nav_menu_link");
   if (!clicked) return;
   const clickedSectionName = clicked.classList[1];
-  // global.getActiveVid().closest(".vid-wrapper").style.backgroundImage = "none";
-  // global.getActiveVid().closest(".vid-wrapper").style.backgroundColor = "black";
   lastActiveSectionName = global.allSections.find((el) =>
     el.classList.contains("active"),
   ).classList[1];
@@ -91,6 +89,7 @@ Navbar.navMenu.addEventListener("click", function (e) {
     global.blackout.classList.remove("off");
     clearAllTimers();
     Navbar.closeNavMenu();
+
     global.deactivateCurrentBtns();
     global.disablePause();
     global.setActiveSection(clickedSectionName);
@@ -106,6 +105,7 @@ Navbar.navMenu.addEventListener("click", function (e) {
   } else return;
   switch (clickedSectionName) {
     case "features":
+      //separate blackout to prevent flashes on other sections
       Features.featuresBlackout.classList.add("off");
       Features.hideAllText();
       Features.showIntroText();
@@ -131,14 +131,15 @@ Navbar.navMenu.addEventListener("click", function (e) {
       Data.setDataVidBackgroundImg();
 
       break;
-    case "sequence":
-      // global.blackout.classList.add("off");
+    case "sequence": //in default setting, these only engage when no dropdown menu
       global.flashBlackout();
       Sequence.setActiveSequenceSection();
       Sequence.showIntroText();
+      Navbar.toggleNav();
       break;
   }
 });
+//dropdown-icon
 Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".dropdown-icon");
   if (!clicked) return;
@@ -285,9 +286,6 @@ global.mainWrapper.addEventListener("click", function (e) {
       Features.vidPlay(clicked);
       break;
     case "data":
-      //hide
-      // global.blackout.classList.remove("off");
-
       //setting UI and logic...
       Data.setLastActiveView(); //for the bckgrnd img to change to comp vid starts
       Data.setDataVidBackgroundImg();

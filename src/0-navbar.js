@@ -30,10 +30,16 @@ class Navbar {
     });
   };
   toggleNav = function (clicked) {
-    clicked
-      .closest(".nav_menu_link-wrap")
-      .querySelector(".nav_menu_dropdown")
-      .classList.toggle("active");
+    if (clicked) {
+      clicked
+        .closest(".nav_menu_link-wrap")
+        .querySelector(".nav_menu_dropdown")
+        .classList.toggle("active");
+    } else {
+      this.navMenu
+        .querySelector(".nav_menu_dropdown")
+        .classList.toggle("active");
+    }
   };
 }
 export default new Navbar();

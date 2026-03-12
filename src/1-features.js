@@ -71,7 +71,6 @@ class Features {
   };
   vidEnd = function () {
     if (this.featuresEndisCancelled === false) {
-      // global.disableNavLinksAndNavBtn();
       global.disableSectionCtrlBtnEvents();
       global.disablePause(this.pauseWrapper);
       this.featuresTimer = setTimeout(() => {

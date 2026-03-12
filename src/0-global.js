@@ -5,10 +5,6 @@ export const mainWrapper = document.querySelector(".main-wrapper");
 export const blackout = document.querySelector(".blackout");
 export const allSections = [...document.querySelectorAll(".section")];
 export const allVids = document.querySelectorAll(".vid");
-// let activeSection = document.querySelector(".section.features");
-// let activeVid = document
-//   .querySelector(".section.features")
-//   .querySelector(".vid");
 let activeSection;
 let activeVid;
 let startTime;
@@ -107,7 +103,6 @@ export const resetAllSectionVids = function () {
 };
 
 export const playRange = function (videoCurrentTime) {
-  // const activeVid = global.getActiveVid();
   const vidCode = activeVid.parentElement;
   const targetStart = videoCurrentTime || startTime;
 
