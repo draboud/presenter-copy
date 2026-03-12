@@ -320,7 +320,6 @@
     };
     vidEnd = function() {
       if (this.featuresEndisCancelled === false) {
-        disableNavLinksAndNavBtn();
         disableSectionCtrlBtnEvents();
         disablePause(this.pauseWrapper);
         this.featuresTimer = setTimeout(() => {
