@@ -880,7 +880,6 @@
         features_default.vidPlay(clicked);
         break;
       case "data":
-        blackout.classList.remove("off");
         data_default.hideActiveCtrlBtnWrapper();
         data_default.ctrlBtnIndex = getCtrlBtnIndex(clicked);
         data_default.setDataVidStartAndEnd(clicked);

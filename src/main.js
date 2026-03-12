@@ -288,7 +288,7 @@ global.mainWrapper.addEventListener("click", function (e) {
       break;
     case "data":
       //hide
-      global.blackout.classList.remove("off");
+      // global.blackout.classList.remove("off");
 
       //setting UI and logic...
       Data.hideActiveCtrlBtnWrapper();
