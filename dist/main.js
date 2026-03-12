@@ -898,7 +898,7 @@
   mainWrapper.addEventListener("click", function(e) {
     const clicked = e.target.closest(".ctrl-btn-back");
     if (!clicked) return;
-    blackout.classList.remove("off");
+    flashBlackout();
     data_default.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
     data_default.txtOrImg = "image";
     data_default.activeDataWrapper.querySelector(".txt-img-btn").classList.remove("active");
@@ -910,7 +910,6 @@
     data_default.showCtrlBtnWrapper();
     data_default.setDataVidBackgroundImg();
     clearSectionVidSrc();
-    blackout.classList.add("off");
   });
   allVids.forEach(function(el) {
     el.addEventListener("ended", function() {

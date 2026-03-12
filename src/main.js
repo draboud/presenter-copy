@@ -291,7 +291,7 @@ global.mainWrapper.addEventListener("click", function (e) {
       // global.blackout.classList.remove("off");
 
       //setting UI and logic...
-      Data.setLastActiveView(); //for the bckgrnd img
+      Data.setLastActiveView(); //for the bckgrnd img to change to comp vid starts
       Data.setDataVidBackgroundImg();
       Data.hideActiveCtrlBtnWrapper();
       Data.ctrlBtnIndex = global.getCtrlBtnIndex(clicked);
@@ -312,8 +312,8 @@ global.mainWrapper.addEventListener("click", function (e) {
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn-back");
   if (!clicked) return;
-  //hide
-  global.blackout.classList.remove("off");
+  //hide with a flashback for more consistent reveal timing
+  global.flashBlackout();
 
   //setting UI and logic...
   Data.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
@@ -331,9 +331,6 @@ global.mainWrapper.addEventListener("click", function (e) {
   //setting vid element...
   Data.setDataVidBackgroundImg();
   global.clearSectionVidSrc(); //reveal poster
-
-  //reveal
-  global.blackout.classList.add("off");
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................
