@@ -696,7 +696,7 @@
   var sequence_default = new Sequence();
 
   // src/main.js
-  console.log("refactoring...15");
+  console.log("BRANCH: newModules");
   document.addEventListener("DOMContentLoaded", () => {
     init();
   });
