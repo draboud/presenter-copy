@@ -7,6 +7,7 @@ export const allSections = [...document.querySelectorAll(".section")];
 export const allVidCodes = document.querySelectorAll(".vid-code");
 export const allVids = document.querySelectorAll(".vid");
 let activeSection;
+let activeSectionName;
 let activeVid;
 let startTime;
 let endTime;
@@ -46,8 +47,12 @@ export const deactivateCurrentNavLinks = function () {
 export const getActiveSection = function () {
   return activeSection;
 };
+export const getActiveSectionName = function () {
+  return activeSectionName;
+};
 export const setActiveSection = function (sectionName, index) {
   deactivateAllSections();
+  activeSectionName = sectionName;
   if (!index) index = 0;
   const matches = allSections.filter(
     (el) => el.dataset.section === sectionName,

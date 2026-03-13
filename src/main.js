@@ -1,4 +1,4 @@
-console.log("BRANCH: newModules");
+console.log("BRANCH: newModules-1");
 import { START_UI_REVEAL } from "./0-config";
 import * as global from "./0-global";
 import Navbar from "./0-navbar";
@@ -13,52 +13,34 @@ document.addEventListener("DOMContentLoaded", () => {
 //.......................................................................
 //EVENT DELEGATION-NAV...................................................
 //nav_menu_link
+
+const SECTIONS = {
+  features: Features,
+  data: Data,
+  sequence: Sequence,
+};
+
 Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".nav_menu_link");
   if (!clicked) return;
-  const clickedSectionName = clicked.dataset.navSection;
-  if (!clickedSectionName) {
-    console.warn("Nav link clicked but no data-section attribute found!");
-    return;
-  }
-  const lastActiveSectionName = global.allSections.find((el) =>
-    el.classList.contains("active"),
-  ).dataset.section;
 
-  if (clickedSectionName !== lastActiveSectionName) {
-    global.blackout.classList.remove("off");
-    clearAllTimers();
-    Navbar.closeNavMenu();
-
-    global.deactivateCurrentBtns();
-    global.disablePause();
-    global.setActiveSection(clickedSectionName);
-    global
-      .getActiveSection()
-      .querySelectorAll(".vid-code")
-      .forEach(function (el) {
-        el.classList.add("active");
-      });
-    global.setActiveVid();
-    global.activateCurrentNavLink(clicked);
-    global.enableSectionCtrlBtnEvents();
-  } else return;
-  switch (clickedSectionName) {
-    case "features":
-      Features.initSection(); //has its own blackout to prevent flases elsewhere
-      break;
-    case "data":
-      // keep consistent flash for all nav tabs
-      global.flashBlackout();
-      Data.initSection();
-      break;
-    case "sequence": //in default setting, these only engage when no dropdown menu
-      global.flashBlackout();
-      Sequence.initSection();
-      Navbar.toggleNav();
-      break;
-  }
+  const sectionName = clicked.dataset.navSection;
+  const targetModule = SECTIONS[sectionName];
+  console.log("sectionName: " + sectionName);
+  console.log("targetModule: ");
+  console.log(targetModule);
+  console.log("global.getActiveSectionName:");
+  console.log(global.getActiveSectionName());
+  if (sectionName === global.getActiveSectionName()) return;
+  //1. Generic cleanup
+  clearAllTimers();
+  global.blackout.classList.remove("off");
+  //2. State update
+  global.setActiveSection(sectionName);
+  //3. Polymorphic call
+  targetModule.initSection();
 });
+
 Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".dropdown-icon");
   if (!clicked) return;

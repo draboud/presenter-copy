@@ -34,6 +34,7 @@ class Features {
   //.......................................................................
   //FUNCTIONS..............................................................
   initSection = function () {
+    console.log("inside Features initSection");
     this.featuresBlackout.classList.add("off");
     this.hideAllText();
     this.showIntroText();

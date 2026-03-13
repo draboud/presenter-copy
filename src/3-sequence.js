@@ -13,6 +13,7 @@ class Sequence {
   //.......................................................................
   //FUNCTIONS..............................................................
   initSection = function () {
+    console.log("inside Sequence initSection");
     this.setActiveSequenceSection();
     this.showIntroText();
   };

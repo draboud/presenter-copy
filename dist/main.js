@@ -32,6 +32,7 @@
   var allVidCodes = document.querySelectorAll(".vid-code");
   var allVids = document.querySelectorAll(".vid");
   var activeSection;
+  var activeSectionName;
   var activeVid;
   var startTime;
   var endTime;
@@ -65,8 +66,12 @@
   var getActiveSection = function() {
     return activeSection;
   };
+  var getActiveSectionName = function() {
+    return activeSectionName;
+  };
   var setActiveSection = function(sectionName, index) {
     deactivateAllSections();
+    activeSectionName = sectionName;
     if (!index) index = 0;
     const matches = allSections.filter(
       (el) => el.dataset.section === sectionName
@@ -278,6 +283,7 @@
     //.......................................................................
     //FUNCTIONS..............................................................
     initSection = function() {
+      console.log("inside Features initSection");
       this.featuresBlackout.classList.add("off");
       this.hideAllText();
       this.showIntroText();
@@ -398,6 +404,7 @@
     //.......................................................................
     //FUNCTIONS..............................................................
     initSection = function() {
+      console.log("inside Data initSection");
       this.dimmer.classList.remove("active");
       this.txtOrImg = "image";
       this.txtImgBtn.textContent = "image";
@@ -655,6 +662,7 @@
     //.......................................................................
     //FUNCTIONS..............................................................
     initSection = function() {
+      console.log("inside Sequence initSection");
       this.setActiveSequenceSection();
       this.showIntroText();
     };
@@ -696,49 +704,30 @@
   var sequence_default = new Sequence();
 
   // src/main.js
-  console.log("BRANCH: newModules");
+  console.log("BRANCH: newModules-1");
   document.addEventListener("DOMContentLoaded", () => {
     init();
   });
+  var SECTIONS = {
+    features: features_default,
+    data: data_default,
+    sequence: sequence_default
+  };
   navbar_default.navMenu.addEventListener("click", function(e) {
     const clicked = e.target.closest(".nav_menu_link");
     if (!clicked) return;
-    const clickedSectionName = clicked.dataset.navSection;
-    if (!clickedSectionName) {
-      console.warn("Nav link clicked but no data-section attribute found!");
-      return;
-    }
-    const lastActiveSectionName = allSections.find(
-      (el) => el.classList.contains("active")
-    ).dataset.section;
-    if (clickedSectionName !== lastActiveSectionName) {
-      blackout.classList.remove("off");
-      clearAllTimers();
-      navbar_default.closeNavMenu();
-      deactivateCurrentBtns();
-      disablePause();
-      setActiveSection(clickedSectionName);
-      getActiveSection().querySelectorAll(".vid-code").forEach(function(el) {
-        el.classList.add("active");
-      });
-      setActiveVid();
-      activateCurrentNavLink(clicked);
-      enableSectionCtrlBtnEvents();
-    } else return;
-    switch (clickedSectionName) {
-      case "features":
-        features_default.initSection();
-        break;
-      case "data":
-        flashBlackout();
-        data_default.initSection();
-        break;
-      case "sequence":
-        flashBlackout();
-        sequence_default.initSection();
-        navbar_default.toggleNav();
-        break;
-    }
+    const sectionName = clicked.dataset.navSection;
+    const targetModule = SECTIONS[sectionName];
+    console.log("sectionName: " + sectionName);
+    console.log("targetModule: ");
+    console.log(targetModule);
+    console.log("global.getActiveSectionName:");
+    console.log(getActiveSectionName());
+    if (sectionName === getActiveSectionName()) return;
+    clearAllTimers();
+    blackout.classList.remove("off");
+    setActiveSection(sectionName);
+    targetModule.initSection();
   });
   navbar_default.navMenu.addEventListener("click", function(e) {
     const clicked = e.target.closest(".dropdown-icon");
