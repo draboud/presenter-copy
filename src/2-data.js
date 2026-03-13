@@ -1,4 +1,3 @@
-import * as global from "./0-global";
 import {
   DATA_VIEW_1,
   DATA_VIEW_1_MP,
@@ -10,56 +9,62 @@ import {
 } from "./0-config";
 
 class Data {
-  //.......................................................................
-  //DEFINITIONS............................................................
-  introText = document
-    .querySelector(".section.data")
-    .querySelector(".section-wrap-txt");
+  constructor(globalController, container) {
+    this.global = globalController;
+    this.container = container;
+    //.......................................................................
+    //DEFINITIONS............................................................
+    this.introText = this.container.querySelector(".section-wrap-txt");
 
-  viewVidDiv = document.querySelector(".vid-wrapper.view");
-  allViewVidDivs = document
-    .querySelector(".section.data")
-    .querySelectorAll(".vid-code-view");
-  compVidDiv = document.querySelector(".vid-wrapper.comp");
-  allDataVidDivs = document
-    .querySelector(".section.data")
-    .querySelectorAll(".vid-code");
-  startTime;
-  endTime;
-  viewVidFlag;
+    this.viewVidDiv = this.container.querySelector(".vid-wrapper.view");
+    this.allViewVidDivs = this.container.querySelectorAll(".vid-code-view");
+    this.compVidDiv = this.container.querySelector(".vid-wrapper.comp");
+    this.allDataVidDivs = this.container.querySelectorAll(".vid-code");
+    this.startTime;
+    this.endTime;
+    this.viewVidFlag;
 
-  viewOptsBtn = document.querySelector(".opts-menu_btn");
-  viewOptsMenu = document.querySelector(".opts-dropdown");
-  allViewOptBtns = [...document.querySelectorAll(".opts-menu_link")];
-  activeViewBtnIndex;
-  activeView;
-  lastActiveView = {};
-  viewChainFlag;
+    this.viewOptsBtn = this.container.querySelector(".opts-menu_btn");
+    this.viewOptsMenu = this.container.querySelector(".opts-dropdown");
+    this.allViewOptBtns = [
+      ...this.container.querySelectorAll(".opts-menu_link"),
+    ];
+    this.activeViewBtnIndex = null;
+    this.activeView = "view-a";
+    this.lastActiveView = { view: "view-a", startTime: 0, endTime: 0 };
+    this.viewChainFlag = false;
 
-  dimmer = document.querySelector(".dimmer");
-  txtImgBtn = document.querySelector(".txt-img-btn");
-  txtOrImg;
-  activeDataWrapper = document
-    .querySelector(".section.data")
-    .querySelector(".section-wrap-comp-data");
-  allDataWrappers = [...document.querySelectorAll(".section-wrap-comp-data")];
-  allData = [...document.querySelectorAll(".comp-data-wrap")];
-  activeDataSheet;
+    this.dimmer = this.container.querySelector(".dimmer");
+    this.txtImgBtn = this.container.querySelector(".txt-img-btn");
+    this.txtOrImg = "image";
+    this.activeDataWrapper = this.container.querySelector(
+      ".section-wrap-comp-data",
+    );
+    this.allDataWrappers = [
+      ...this.container.querySelectorAll(".section-wrap-comp-data"),
+    ];
+    this.allData = [...this.container.querySelectorAll(".comp-data-wrap")];
+    this.activeDataSheet = null;
 
-  ctrlBtnWrapper = document
-    .querySelector(".section.data")
-    .querySelector(".section-wrap-btns");
-  allCtrlBtnWrappers = [
-    ...document
-      .querySelector(".section.data")
-      .querySelectorAll(".section-wrap-btns"),
-  ];
-  activeCtrlBtnWrapper;
-  ctrlBtnIndex;
+    this.ctrlBtnWrapper = this.container.querySelector(".section-wrap-btns");
+    this.allCtrlBtnWrappers = [
+      ...this.container.querySelectorAll(".section-wrap-btns"),
+    ];
+    this.activeCtrlBtnWrapper = this.allCtrlBtnWrappers[0];
+    this.ctrlBtnIndex = null;
+    this.eventMap = new Map([
+      ["play-ctrl-vid", this.setAndPlayCtrlBtnVid.bind(this)],
+      ["play-view-vid", this.setAndPlayViewVid.bind(this)],
+      ["back-to-view", this.backToViewFromComp.bind(this)],
+      ["open-view-opts-menu", this.showViewOptsMenu.bind(this)],
+      ["close-view-opts-menu", this.hideViewOptsMenu.bind(this)],
+      ["toggle-img-txt", this.showCompImageOrText.bind(this)],
+    ]);
+  }
   //.......................................................................
   //FUNCTIONS..............................................................
   initSection = function () {
-    console.log("inside Data initSection");
+    this.global.flashBlackout();
     //setting UI and logic...
     this.dimmer.classList.remove("active");
     this.txtOrImg = "image";
@@ -67,31 +72,27 @@ class Data {
     this.hideBackBtn();
     this.hideAllData();
     this.resetAllDataSheets();
-    this.showIntroText();
+    this.introText.classList.add("active");
     this.showCtrlBtnWrapper();
 
     //setting vid element...
-    global.clearSectionVidSrc(); //reveal poster
+    this.global.clearSectionVidSrc(); //reveal poster
     this.setLastActiveView(); //for bckgrnd img
     this.setDataVidBackgroundImg();
   };
-  backToViewFromComp = function () {
-    //setting UI and logic...
-    this.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
-    this.txtOrImg = "image";
-    this.activeDataWrapper
-      .querySelector(".txt-img-btn")
-      .classList.remove("active");
-    this.hideAllData();
-    this.resetAllDataSheets();
-    this.dimmer.classList.remove("active");
-    this.showIntroText();
-    this.hideBackBtn();
-    this.showCtrlBtnWrapper();
-
-    //setting vid element...
-    this.setDataVidBackgroundImg();
-    global.clearSectionVidSrc(); //reveal poster
+  handleEvent = (eventAction, clickedBtn) => {
+    const action = this.eventMap.get(eventAction);
+    if (action) {
+      action(clickedBtn);
+    } else {
+      console.warn(`No action found for: ${eventAction}`);
+    }
+  };
+  showViewOptsMenu = function () {
+    this.viewOptsMenu.classList.add("active");
+  };
+  hideViewOptsMenu = function () {
+    this.viewOptsMenu.classList.remove("active");
   };
   showCompImageOrText = function () {
     if (this.txtOrImg === "image") {
@@ -105,21 +106,6 @@ class Data {
     }
     this.activeDataWrapper.querySelector(".txt-img-btn").textContent =
       this.txtOrImg;
-  };
-  showIntroText = function () {
-    this.introText.classList.add("active");
-  };
-  hideIntroText = function () {
-    this.introText.classList.remove("active");
-  };
-  showViewOpts = function () {
-    this.viewOptsMenu.classList.add("active");
-  };
-  hideViewOpts = function () {
-    this.viewOptsMenu.classList.remove("active");
-  };
-  setViewOptsBtnText = function (optText) {
-    this.viewOptsBtn.textContent = optText;
   };
   setActiveViewBtnIndex = function () {
     this.allViewOptBtns.forEach((el, index) => {
@@ -138,7 +124,7 @@ class Data {
       });
   };
   showData = function () {
-    this.showActiveDataWrapper();
+    this.activeDataWrapper.classList.add("active");
     this.activeDataSheet = Array.from(
       this.activeDataWrapper.querySelectorAll(".comp-data-wrap"),
     )[this.ctrlBtnIndex];
@@ -210,7 +196,7 @@ class Data {
   };
   setDataVidPoster = function (newValue) {
     if (!newValue) newValue = this.activeView;
-    const activeVid = global.getActiveVid();
+    const activeVid = this.global.getActiveVid();
     if (!activeVid || activeVid.closest(".section").classList[1] !== "data")
       return;
     if (activeVid.parentElement.classList.contains("mp")) {
@@ -236,7 +222,7 @@ class Data {
     }
   };
   setDataVidBackgroundImg = function () {
-    const activeVid = global.getActiveVid();
+    const activeVid = this.global.getActiveVid();
     const activeVidWrap = activeVid.closest(".vid-wrapper");
     if (activeVid.parentElement.classList.contains("mp")) {
       if (this.lastActiveView.view === "view-a") {
@@ -260,36 +246,68 @@ class Data {
       }
     }
   };
-  setActiveDataWrapper = function () {
-    this.activeDataWrapper = this.allDataWrappers[this.activeViewBtnIndex];
-  };
-  showActiveDataWrapper = function () {
-    this.activeDataWrapper.classList.add("active");
-  };
   deactivateAllDataWrappers = function () {
     this.allDataWrappers.forEach(function (el) {
       el.classList.remove("active");
     });
   };
-  dataVidPlay = function () {
-    this.hideIntroText();
+  setAndPlayViewVid = function (clickedViewOptsBtn) {
+    //setting UI and logic...
+    this.global.disableNavLinksAndNavBtn();
+    clickedViewOptsBtn.classList.add("active"); //for Data.setActiveViewBtnIndex
+    this.setActiveViewBtnIndex();
+    this.viewOptsMenu.classList.remove("active");
+    this.viewOptsBtn.textContent = clickedViewOptsBtn.textContent;
+    this.activeDataWrapper = this.allDataWrappers[this.activeViewBtnIndex];
+    this.setActiveCtrlBtnWrapper();
+
+    //setting vid element...
+    this.global.setActiveVid();
+    this.global
+      .getActiveSection()
+      .querySelectorAll(".vid-code")
+      .forEach(function (el) {
+        el.classList.add("active");
+      }); //so global.setActiveVid can pick dt or mp from actives
+    this.setLastActiveView(); //for the bckgrnd img
+    this.setDataVidBackgroundImg();
+    this.setActiveView(clickedViewOptsBtn.textContent); //for the poster
+
+    //play vid
+    this.setViewVidStartAndEnd();
+    this.playDataVid();
+  };
+  setAndPlayCtrlBtnVid = function (clickedCtrlBtn) {
+    this.global.setActiveVid();
+
+    this.setLastActiveView(); //for the bckgrnd img to change to comp vid starts
+    this.setDataVidBackgroundImg();
+    this.hideActiveCtrlBtnWrapper();
+    this.ctrlBtnIndex = this.global.getCtrlBtnIndex(clickedCtrlBtn);
+
+    //play
+    this.setDataVidStartAndEnd(clickedCtrlBtn);
+    this.playDataVid(); //removes blackout in global.playRange
+  };
+  playDataVid = function () {
+    this.introText.classList.remove("active");
     this.activeCtrlBtnWrapper.classList.remove("active");
-    global.setStartTime(this.startTime);
-    global.setEndTime(this.endTime);
-    global.playRange();
+    this.global.setStartTime(this.startTime);
+    this.global.setEndTime(this.endTime);
+    this.global.playRange();
   };
   vidEnd = function () {
     if (this.viewVidFlag && !this.viewChainFlag) {
       this.setDataVidPoster(); //done here so poster doesn't appear earlier
       this.showActiveCtrlBtnWrapper();
-      this.showIntroText();
-      global.enableNavLinksAndNavBtn();
+      this.introText.classList.add("active");
+      this.global.enableNavLinksAndNavBtn();
     } else if (this.viewChainFlag) {
       this.viewChainFlag = false;
       this.setLastActiveView("view-a");
       this.setDataVidBackgroundImg();
       this.setViewVidStartAndEnd();
-      this.dataVidPlay();
+      this.playDataVid();
     } else {
       this.dimmer.classList.add("active");
       this.activeDataWrapper
@@ -299,11 +317,30 @@ class Data {
       this.showBackBtn();
 
       //set bckgrnd img to black to prevent flash of image when changing nav
-      global.getActiveVid().closest(".vid-wrapper").style.backgroundImage =
+      this.global.getActiveVid().closest(".vid-wrapper").style.backgroundImage =
         "none";
-      global.getActiveVid().closest(".vid-wrapper").style.backgroundColor =
+      this.global.getActiveVid().closest(".vid-wrapper").style.backgroundColor =
         "black";
     }
+  };
+  backToViewFromComp = function () {
+    this.global.flashBlackout();
+    //setting UI and logic...
+    this.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
+    this.txtOrImg = "image";
+    this.activeDataWrapper
+      .querySelector(".txt-img-btn")
+      .classList.remove("active");
+    this.hideAllData();
+    this.resetAllDataSheets();
+    this.dimmer.classList.remove("active");
+    this.introText.classList.add("active");
+    this.hideBackBtn();
+    this.showCtrlBtnWrapper();
+
+    //setting vid element...
+    this.setDataVidBackgroundImg();
+    this.global.clearSectionVidSrc(); //reveal poster
   };
   hideActiveCtrlBtnWrapper = function () {
     this.activeCtrlBtnWrapper.classList.remove("active");
@@ -320,7 +357,7 @@ class Data {
     this.activeCtrlBtnWrapper.classList.add("active");
   };
   setActiveCtrlBtnWrapper = function () {
-    global.deactivateAllCtrlBtnWrappers();
+    this.global.deactivateAllCtrlBtnWrappers();
     this.activeCtrlBtnWrapper =
       this.allCtrlBtnWrappers[this.activeViewBtnIndex];
   };
@@ -330,4 +367,4 @@ class Data {
     });
   };
 }
-export default new Data();
+export default Data;

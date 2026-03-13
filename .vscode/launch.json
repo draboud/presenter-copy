@@ -5,7 +5,7 @@
       "name": "Launch Webflow Debugger",
       "type": "chrome",
       "request": "launch",
-      "url": "https://wf-template-presenter.webflow.io/",
+      "url": "https://presenter-copy.webflow.io/",
       "webRoot": "${workspaceFolder}/src",
       "sourceMapPathOverrides": {
         "http://localhost:3000/*": "${workspaceFolder}/src/*",

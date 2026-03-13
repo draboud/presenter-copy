@@ -1,44 +1,55 @@
-console.log("BRANCH: newModules-1");
+console.log("BRANCH: newModules-2");
+
 import { START_UI_REVEAL } from "./0-config";
 import * as global from "./0-global";
 import Navbar from "./0-navbar";
-import Features from "./1-features";
-import Data from "./2-data";
-import Sequence from "./3-sequence";
+import FeaturesClass from "./1-features";
+import DataClass from "./2-data";
+import SequenceClass from "./3-sequence";
+
 //.......................................................................
 //init call (function at bottom).........................................
 document.addEventListener("DOMContentLoaded", () => {
   init();
 });
 //.......................................................................
+//DEFINITIONS............................................................
+const featuresContainer = document.querySelector(".section.features");
+const dataContainer = document.querySelector(".section.data");
+const sequenceContainer = document.querySelector(".section.sequence");
+
+// Main.js
+// const allSequenceContainers = document.querySelectorAll(".section.sequence");
+
+const features = new FeaturesClass(global, featuresContainer);
+const data = new DataClass(global, dataContainer);
+const sequence = new SequenceClass(global, sequenceContainer);
+// const sequenceInstances = Array.from(allSequenceContainers).map((el) => {
+//   return new SequenceClass(global, el);
+// });
+const SECTIONS = {
+  features: features,
+  data: data,
+  sequence: sequence,
+};
+//.......................................................................
 //EVENT DELEGATION-NAV...................................................
 //nav_menu_link
-
-const SECTIONS = {
-  features: Features,
-  data: Data,
-  sequence: Sequence,
-};
-
 Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".nav_menu_link");
   if (!clicked) return;
-
-  const sectionName = clicked.dataset.navSection;
-  const targetModule = SECTIONS[sectionName];
-  console.log("sectionName: " + sectionName);
-  console.log("targetModule: ");
-  console.log(targetModule);
-  console.log("global.getActiveSectionName:");
-  console.log(global.getActiveSectionName());
-  if (sectionName === global.getActiveSectionName()) return;
+  const clickedSectionName = clicked.dataset.navSection;
+  const targetModule = SECTIONS[clickedSectionName];
+  if (clickedSectionName === global.getActiveSectionName()) return;
   //1. Generic cleanup
   clearAllTimers();
   global.blackout.classList.remove("off");
+  features.pauseWrapper.classList.remove("active");
+  sequence.pauseWrapper.classList.remove("active");
   //2. State update
-  global.setActiveSection(sectionName);
+  global.setActiveSection(clickedSectionName);
   //3. Polymorphic call
-  targetModule.initSection();
+  targetModule.initSection(clicked);
 });
 
 Navbar.navMenu.addEventListener("click", function (e) {
@@ -84,8 +95,8 @@ Navbar.allNavDropdowns.forEach(function (el) {
       Navbar.navBtn.click();
     }
     Navbar.getDropdownIndex(clicked);
-    global.setActiveSection("sequence", Navbar.dropdownIndex);
-    Sequence.setActiveSequenceSection();
+    global.setActiveSection("sequence");
+    sequence.initSection(null, Navbar.dropdownIndex);
     global.flashBlackout();
     global.disablePause();
     global.clearSectionVidSrc();
@@ -93,111 +104,42 @@ Navbar.allNavDropdowns.forEach(function (el) {
       clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
     );
     global.enableSectionCtrlBtnEvents();
-    Sequence.showIntroText();
   });
 });
 //.......................................................................
 //EVENT DELEGATION-BTNS..................................................
-//pause-wrapper
+//.......................................................................
+//.......................................................................
 global.mainWrapper.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".pause-wrapper");
+  const clicked = e.target.closest("[data-click-action]");
   if (!clicked) return;
-  global.TogglePause();
+  const activeSection = clicked.closest(".section").dataset.section;
+  const targetModule = SECTIONS[activeSection];
+  const action = clicked.dataset.clickAction;
+  targetModule.handleEvent(action, clicked);
 });
-Data.viewOptsBtn.addEventListener("mouseenter", function () {
-  Data.showViewOpts();
-});
-Data.viewOptsBtn.addEventListener("mouseleave", function () {
-  Data.hideViewOpts();
-});
-Data.viewOptsMenu.addEventListener("mouseenter", function () {
-  Data.showViewOpts();
-});
-Data.viewOptsMenu.addEventListener("mouseleave", function () {
-  Data.hideViewOpts();
-});
-//txt-img-btn
-global.mainWrapper.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".txt-img-btn");
-  if (!clicked) return;
-  Data.showCompImageOrText();
-});
-//opt-menu_link
-global.mainWrapper.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".opts-menu_link");
-  if (!clicked) return;
-  if (clicked.textContent === Data.activeView) return;
+global.mainWrapper.addEventListener("mouseover", function (e) {
+  const hovered = e.target.closest("[data-mouseover-action]");
+  if (!hovered) return;
+  if (this.currentHover === hovered) return; // Exit if we are already hovering it
+  this.currentHover = hovered;
 
-  //setting UI and logic...
-  global.disableNavLinksAndNavBtn();
-  clicked.classList.add("active"); //for Data.setActiveViewBtnIndex
-  Data.setActiveViewBtnIndex();
-  Data.hideViewOpts();
-  Data.setViewOptsBtnText(clicked.textContent);
-  Data.setActiveDataWrapper();
-  Data.setActiveCtrlBtnWrapper();
-
-  //setting vid element...
-  global
-    .getActiveSection()
-    .querySelectorAll(".vid-code")
-    .forEach(function (el) {
-      el.classList.add("active");
-    }); //so global.setActiveVid can pick dt or mp from actives
-  Data.setLastActiveView(); //for the bckgrnd img
-  Data.setDataVidBackgroundImg();
-  Data.setActiveView(clicked.textContent); //for the poster
-
-  //play vid
-  Data.setViewVidStartAndEnd();
-  Data.dataVidPlay();
+  const activeSection = hovered.closest(".section").dataset.section;
+  const targetModule = SECTIONS[activeSection];
+  const action = hovered.dataset.mouseoverAction;
+  targetModule.handleEvent(action, hovered);
 });
-//ctrl-btn
-global.mainWrapper.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".ctrl-btn");
-  if (!clicked) return;
-  global
-    .getActiveSection()
-    .querySelectorAll(".vid-code")
-    .forEach(function (el) {
-      el.classList.add("active");
-    });
-  const vidType = global.getVidType(clicked);
-  global.disablePause();
-  switch (vidType) {
-    case "features":
-      clearAllTimers();
-      Features.hideFeaturesIntroVidDiv();
-      Features.showFeaturesVidDiv();
-      Features.btnIndex = global.getCtrlBtnIndex(clicked);
-      Features.vidPlay(clicked);
-      break;
-    case "data":
-      //setting UI and logic...
-      Data.setLastActiveView(); //for the bckgrnd img to change to comp vid starts
-      Data.setDataVidBackgroundImg();
-      Data.hideActiveCtrlBtnWrapper();
-      Data.ctrlBtnIndex = global.getCtrlBtnIndex(clicked);
+global.mainWrapper.addEventListener("mouseout", function (e) {
+  const hovered = e.target.closest("[data-mouseout-action]");
+  if (!hovered) return;
+  // If the mouse moved to a child of the same button, don't trigger the "Exit"
+  if (hovered.contains(e.relatedTarget)) return;
+  this.currentHover = null;
 
-      //play
-      Data.setDataVidStartAndEnd(clicked);
-      Data.dataVidPlay(); //removes blackout in global.playRange
-      break;
-    case "sequence":
-      clearAllTimers();
-      Sequence.setActiveSequenceSection();
-      Sequence.hideIntroText();
-      Sequence.vidPlay(clicked);
-      break;
-  }
-});
-//ctrl-btn-back
-global.mainWrapper.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".ctrl-btn-back");
-  if (!clicked) return;
-  //hide with a flashback for more consistent reveal timing
-  global.flashBlackout();
-  Data.backToViewFromComp();
+  const activeSection = hovered.closest(".section").dataset.section;
+  const targetModule = SECTIONS[activeSection];
+  const action = hovered.dataset.mouseoutAction;
+  targetModule.handleEvent(action, hovered);
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................
@@ -207,13 +149,13 @@ global.allVids.forEach(function (el) {
     const vidType = global.getVidType(el);
     switch (vidType) {
       case "features":
-        Features.vidEnd();
+        features.vidEnd();
         break;
       case "data":
-        Data.vidEnd(el.closest(".vid"));
+        data.vidEnd(el.closest(".vid"));
         break;
       case "sequence":
-        Sequence.vidEnd();
+        sequence.vidEnd();
         break;
     }
   });
@@ -230,27 +172,14 @@ const init = function () {
   });
   global.setActiveSection("features");
   global.setActiveVid();
-  Features.featuresEndisCancelled = false;
-  Features.hideAllText();
-  Features.featuresCtrlBtns.classList.remove("active");
-  Data.activeView = "view-a";
-  Data.txtOrImg = "image";
-  Data.lastActiveView = {
-    view: "view-a",
-    startTime: 0,
-    endTime: 0,
-  };
-  Data.viewChainFlag = false;
-  Data.activeCtrlBtnWrapper = Data.allCtrlBtnWrappers[0];
-  Sequence.sequenceEndIsCanelled = false;
+  global.blackout.classList.add("off");
+  features.playFeaturesIntro();
   //.......................................................................
   //.......................................................................
   setTimeout(() => {
     Navbar.navComponent.classList.add("active");
-    Features.showIntroText();
-    Features.featuresCtrlBtns.classList.add("active");
+    features.initSection(null, true);
   }, START_UI_REVEAL);
-  Features.playFeaturesIntro();
   //.......................................................................
   //.......................................................................
 };
@@ -313,6 +242,6 @@ const setupLazyLoading = function () {
 };
 //features and sequence timers
 const clearAllTimers = function () {
-  Features.clearFeaturesTimers();
-  Sequence.clearSequenceTimers();
+  features.clearFeaturesTimers();
+  sequence.clearSequenceTimers();
 };

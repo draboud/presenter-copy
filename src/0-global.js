@@ -99,8 +99,8 @@ export const resetAllSectionVids = function () {
     el.pause();
   });
 };
-
 export const playRange = function (videoCurrentTime) {
+  //..................CHECKED
   const vidCode = activeVid.parentElement;
   const targetStart = videoCurrentTime || startTime;
 
@@ -172,35 +172,23 @@ export const playRange = function (videoCurrentTime) {
     });
   }
 };
-
 export const disablePause = function () {
+  //..................CHECKED
   pauseFlag = false;
-  if (activeSection.classList.contains("data")) return;
-  document.querySelectorAll(".pause-wrapper").forEach(function (el) {
-    el.classList.remove("active");
-  });
-  document.querySelectorAll(".pause-wrapper").forEach(function (el) {
-    el.style.pointerEvents = "none";
-  });
+  activeSection.querySelector(".pause-wrapper").style.pointerEvents = "none";
 };
 export const enablePause = function () {
+  //..................CHECKED
   activeSection.querySelector(".pause-wrapper").style.pointerEvents = "auto";
 };
-export const pauseVid = function () {
-  activeSection.querySelector(".pause-wrapper").classList.add("active");
-  activeVid.pause();
-};
-export const unPauseVid = function () {
-  activeSection.querySelector(".pause-wrapper").classList.remove("active");
-  activeVid.play();
-};
-export const TogglePause = function () {
+export const togglePause = function () {
+  //..................CHECKED
   if (pauseFlag) {
     pauseFlag = false;
-    unPauseVid();
+    activeVid.play();
   } else {
     pauseFlag = true;
-    pauseVid();
+    activeVid.pause();
   }
 };
 export const enableSectionCtrlBtnEvents = function () {
@@ -237,6 +225,7 @@ export const deactivateCurrentBtns = function (section) {
   });
 };
 export const getCtrlBtnIndex = function (btn) {
+  //..................CHECKED
   let localIndex;
   const allBtns = btn
     .closest(".section-wrap-btns")

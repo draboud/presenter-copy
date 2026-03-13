@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "serve",
-    "build": "esbuild src/main.js --bundle --outfile=dist/main.js --watch",
+    "build": "esbuild src/main.js --bundle --sourcemap=inline --outfile=dist/main.js --watch",
     "build-by-file": "node builder.js"
   },
   "author": "",
