@@ -1,3 +1,4 @@
+console.log("refactoring...15");
 import { START_UI_REVEAL } from "./0-config";
 import * as global from "./0-global";
 import Navbar from "./0-navbar";
@@ -5,85 +6,25 @@ import Features from "./1-features";
 import Data from "./2-data";
 import Sequence from "./3-sequence";
 //.......................................................................
-//DEFINITIONS............................................................
-startBtn = document.querySelector(".start-btn-wrapper");
-iosConfigWrap = document.querySelector(".ios-config-wrap");
-configBtnWrap = document.querySelector(".config-btn-wrap");
-stepsOKWrap = document.querySelector(".steps-ok-wrap");
-btnOK = document.querySelector(".btn-ok");
-//.......................................................................
 //init call (function at bottom).........................................
 document.addEventListener("DOMContentLoaded", () => {
   init();
 });
-//.......................................................................
-//LAZY LOADING...........................................................
-document.addEventListener("DOMContentLoaded", () => {
-  const allLazyVids = document.querySelectorAll(".vid");
-  const observerOptions = {
-    root: null,
-    rootMargin: "0px",
-    threshold: 0.1,
-  };
-  const videoObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      const video = entry.target;
-      const sources = video.querySelectorAll("source");
-      if (entry.isIntersecting) {
-        // --- LOAD LOGIC ---
-        sources.forEach((source) => {
-          // Use data-src if available, otherwise keep current src
-          const dataSrc = source.getAttribute("data-src") || source.src;
-          if (dataSrc) {
-            source.src = dataSrc;
-            // Keep data-src attribute so we can find the URL again later
-            source.setAttribute("data-src", dataSrc);
-          }
-        });
-        video.load();
-      } else {
-        // --- UNLOAD LOGIC ---
-        // Clears the internal logs for user interactions and resource loads
-        performance.clearMeasures();
-        performance.clearResourceTimings();
-        performance.clearMarks();
-        ResetSection(video.closest(".section"));
-        video.pause();
-        sources.forEach((source) => {
-          // Move src back to data-src and empty the current src
-          const currentSrc = source.src;
-          if (currentSrc) {
-            source.setAttribute("data-src", currentSrc);
-            source.src = ""; // This stops the video from buffering
-            source.removeAttribute("src"); // Fully clear attribute
-          }
-        });
-        // Force the browser to dump the video data from memory
-        video.load();
-      }
-    });
-  }, observerOptions);
-  allLazyVids.forEach((vid) => videoObserver.observe(vid));
-});
-//.......................................................................
-//RESET VIDS AFTER UNLOADING.............................................
-const ResetSection = function (section) {
-  section.querySelectorAll(".vid").forEach(function (el) {
-    el.currentTime = 0;
-    el.pause();
-  });
-  global.deactivateCurrentBtns(section);
-};
 //.......................................................................
 //EVENT DELEGATION-NAV...................................................
 //nav_menu_link
 Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".nav_menu_link");
   if (!clicked) return;
-  const clickedSectionName = clicked.classList[1];
-  lastActiveSectionName = global.allSections.find((el) =>
+  const clickedSectionName = clicked.dataset.navSection;
+  if (!clickedSectionName) {
+    console.warn("Nav link clicked but no data-section attribute found!");
+    return;
+  }
+  const lastActiveSectionName = global.allSections.find((el) =>
     el.classList.contains("active"),
-  ).classList[1];
+  ).dataset.section;
+
   if (clickedSectionName !== lastActiveSectionName) {
     global.blackout.classList.remove("off");
     clearAllTimers();
@@ -104,41 +45,20 @@ Navbar.navMenu.addEventListener("click", function (e) {
   } else return;
   switch (clickedSectionName) {
     case "features":
-      //separate blackout to prevent flashes on other sections
-      Features.featuresBlackout.classList.add("off");
-      Features.hideAllText();
-      Features.showIntroText();
-      Features.playFeaturesIntro();
+      Features.initSection(); //has its own blackout to prevent flases elsewhere
       break;
     case "data":
       // keep consistent flash for all nav tabs
       global.flashBlackout();
-
-      //setting UI and logic...
-      Data.dimmer.classList.remove("active");
-      Data.txtOrImg = "image";
-      Data.txtImgBtn.textContent = "image";
-      Data.hideBackBtn();
-      Data.hideAllData();
-      Data.resetAllDataSheets();
-      Data.showIntroText();
-      Data.showCtrlBtnWrapper();
-
-      //setting vid element...
-      global.clearSectionVidSrc(); //reveal poster
-      Data.setLastActiveView(); //for bckgrnd img
-      Data.setDataVidBackgroundImg();
-
+      Data.initSection();
       break;
     case "sequence": //in default setting, these only engage when no dropdown menu
       global.flashBlackout();
-      Sequence.setActiveSequenceSection();
-      Sequence.showIntroText();
+      Sequence.initSection();
       Navbar.toggleNav();
       break;
   }
 });
-//dropdown-icon
 Navbar.navMenu.addEventListener("click", function (e) {
   const clicked = e.target.closest(".dropdown-icon");
   if (!clicked) return;
@@ -163,16 +83,12 @@ Navbar.allNavLinksWithDropdown.forEach(function (el) {
 });
 Navbar.allNavDropdowns.forEach(function (el) {
   el.addEventListener("mouseenter", function () {
-    el.parentElement
-      .querySelector(".nav_menu_dropdown")
-      .classList.add("active");
+    el.classList.add("active");
   });
 });
 Navbar.allNavDropdowns.forEach(function (el) {
   el.addEventListener("mouseleave", function () {
-    el.parentElement
-      .querySelector(".nav_menu_dropdown")
-      .classList.remove("active");
+    el.classList.remove("active");
   });
 });
 Navbar.allNavDropdowns.forEach(function (el) {
@@ -222,17 +138,7 @@ Data.viewOptsMenu.addEventListener("mouseleave", function () {
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".txt-img-btn");
   if (!clicked) return;
-  if (Data.txtOrImg === "image") {
-    Data.txtOrImg = "text";
-    Data.dimmer.classList.remove("active");
-    Data.activeDataSheet.classList.remove("active");
-  } else {
-    Data.txtOrImg = "image";
-    Data.dimmer.classList.add("active");
-    Data.activeDataSheet.classList.add("active");
-  }
-  Data.activeDataWrapper.querySelector(".txt-img-btn").textContent =
-    Data.txtOrImg;
+  Data.showCompImageOrText();
 });
 //opt-menu_link
 global.mainWrapper.addEventListener("click", function (e) {
@@ -309,23 +215,7 @@ global.mainWrapper.addEventListener("click", function (e) {
   if (!clicked) return;
   //hide with a flashback for more consistent reveal timing
   global.flashBlackout();
-
-  //setting UI and logic...
-  Data.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
-  Data.txtOrImg = "image";
-  Data.activeDataWrapper
-    .querySelector(".txt-img-btn")
-    .classList.remove("active");
-  Data.hideAllData();
-  Data.resetAllDataSheets();
-  Data.dimmer.classList.remove("active");
-  Data.showIntroText();
-  Data.hideBackBtn();
-  Data.showCtrlBtnWrapper();
-
-  //setting vid element...
-  Data.setDataVidBackgroundImg();
-  global.clearSectionVidSrc(); //reveal poster
+  Data.backToViewFromComp();
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................
@@ -350,6 +240,7 @@ global.allVids.forEach(function (el) {
 //FUNCTIONS..............................................................
 //init
 const init = function () {
+  setupLazyLoading();
   global.blackout.classList.remove("off");
   Navbar.navComponent.classList.remove("active");
   Navbar.allNavDropdowns.forEach(function (el) {
@@ -380,6 +271,63 @@ const init = function () {
   Features.playFeaturesIntro();
   //.......................................................................
   //.......................................................................
+};
+const setupLazyLoading = function () {
+  const allLazyVids = document.querySelectorAll(".vid");
+  const observerOptions = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  };
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const video = entry.target;
+      const sources = video.querySelectorAll("source");
+      if (entry.isIntersecting) {
+        // --- LOAD LOGIC ---
+        sources.forEach((source) => {
+          // Use data-src if available, otherwise keep current src
+          const dataSrc = source.getAttribute("data-src") || source.src;
+          if (dataSrc) {
+            source.src = dataSrc;
+            // Keep data-src attribute so we can find the URL again later
+            source.setAttribute("data-src", dataSrc);
+          }
+        });
+        video.load();
+      } else {
+        // --- UNLOAD LOGIC ---
+        // Clears the internal logs for user interactions and resource loads
+        performance.clearMeasures();
+        performance.clearResourceTimings();
+        performance.clearMarks();
+        ResetSection(video.closest(".section"));
+        video.pause();
+        sources.forEach((source) => {
+          // Move src back to data-src and empty the current src
+          const currentSrc = source.src;
+          if (currentSrc) {
+            source.setAttribute("data-src", currentSrc);
+            source.src = ""; // This stops the video from buffering
+            source.removeAttribute("src"); // Fully clear attribute
+          }
+        });
+        // Force the browser to dump the video data from memory
+        video.load();
+      }
+    });
+  }, observerOptions);
+  allLazyVids.forEach((vid) => videoObserver.observe(vid));
+  //.......................................................................
+  //RESET VIDS AFTER UNLOADING.............................................
+  const ResetSection = function (section) {
+    if (!section) return; //helps prevent crashes
+    section.querySelectorAll(".vid").forEach(function (el) {
+      el.currentTime = 0;
+      el.pause();
+    });
+    global.deactivateCurrentBtns(section);
+  };
 };
 //features and sequence timers
 const clearAllTimers = function () {

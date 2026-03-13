@@ -12,6 +12,10 @@ class Sequence {
   sequenceEndIsCanelled;
   //.......................................................................
   //FUNCTIONS..............................................................
+  initSection = function () {
+    this.setActiveSequenceSection();
+    this.showIntroText();
+  };
   setActiveSequenceSection = function () {
     this.activeSequenceSection = this.allSequenceSections.find((el) =>
       el.classList.contains("active"),
@@ -38,8 +42,8 @@ class Sequence {
     this.sequenceEndIsCanelled = false;
     global.enablePause(this.pauseWrapper);
     global.setActiveVid();
-    global.setStartTime(clicked.getAttribute("startTime"));
-    global.setEndTime(clicked.getAttribute("endTime"));
+    global.setStartTime(clicked.dataset.startTime);
+    global.setEndTime(clicked.dataset.endTime);
     global.activateCurrentBtn(clicked);
     global.blackout.classList.remove("off");
     global.playRange();
@@ -50,9 +54,9 @@ class Sequence {
     }
   };
   clearSequenceTimers = function () {
-    Sequence.sequenceEndIsCanelled = true;
-    clearTimeout(Sequence.sequenceTimer);
-    Sequence.sequenceTimer = null;
+    this.sequenceEndIsCanelled = true;
+    clearTimeout(this.sequenceTimer);
+    this.sequenceTimer = null;
   };
 }
 export default new Sequence();

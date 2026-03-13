@@ -20,6 +20,10 @@ export const DATA_VIEW_3_MP =
   "https://cdn.prod.website-files.com/69b060726c9c10d0cebbf5f3/69b066785c709890f1f02679_Data-View-3-MP.webp";
 
 export const VIEW_START_END = {
+  "view-a": {
+    startTime: 0,
+    endTime: 0,
+  },
   "view-b": {
     startTime: 1.48,
     endTime: 2.69,

@@ -4,6 +4,7 @@ import { BLACKOUT_TIMER } from "./0-config";
 export const mainWrapper = document.querySelector(".main-wrapper");
 export const blackout = document.querySelector(".blackout");
 export const allSections = [...document.querySelectorAll(".section")];
+export const allVidCodes = document.querySelectorAll(".vid-code");
 export const allVids = document.querySelectorAll(".vid");
 let activeSection;
 let activeVid;
@@ -48,8 +49,8 @@ export const getActiveSection = function () {
 export const setActiveSection = function (sectionName, index) {
   deactivateAllSections();
   if (!index) index = 0;
-  const matches = allSections.filter((el) =>
-    el.classList.contains(sectionName),
+  const matches = allSections.filter(
+    (el) => el.dataset.section === sectionName,
   );
   const target = matches[index];
   if (target) {
@@ -63,25 +64,17 @@ export const deactivateAllSections = function () {
   });
 };
 export const getVidType = function (video) {
-  return video.closest(".section").classList[1];
+  return video.closest(".section").dataset.section;
 };
 export function getActiveVid() {
   return activeVid;
 }
-export function setActiveVid(specificVid) {
-  if (!specificVid) {
-    activeSection.querySelectorAll(".vid-code").forEach(function (el) {
-      if (window.getComputedStyle(el).opacity != 0) {
-        activeVid = el.querySelector(".vid");
-      }
-    });
-  } else {
-    activeSection.querySelectorAll(`.${specificVid}`).forEach(function (el) {
-      if (window.getComputedStyle(el).opacity != 0) {
-        activeVid = el.querySelector(".vid");
-      }
-    });
-  }
+export function setActiveVid() {
+  allVidCodes.forEach((el) => {
+    if (el.offsetParent !== null) {
+      activeVid = el.querySelector(".vid");
+    }
+  });
 }
 export function setStartTime(newValue) {
   startTime = newValue;

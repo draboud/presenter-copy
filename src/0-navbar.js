@@ -6,23 +6,18 @@ class Navbar {
   navBtn = document.querySelector(".nav_button");
   allNavLinks = document.querySelectorAll(".nav_menu_link");
   allNavLinksWithDropdown = [
-    ...document.querySelectorAll(".nav_menu_link.sequence"),
+    ...document.querySelectorAll('[data-nav-section="sequence"]'),
   ];
   allNavDropdowns = [...document.querySelectorAll(".nav_menu_dropdown")];
   dropdownIndex;
   //.......................................................................
   //FUNCTIONS..............................................................
   getDropdownIndex = function (clicked) {
-    clicked.classList.add("clicked");
     const dropdownMenu = clicked.closest(".nav_menu_dropdown");
-    dropdownMenu
-      .querySelectorAll(".nav_menu_link-dropdown")
-      .forEach((el, index) => {
-        if (el.classList.contains("clicked")) {
-          this.dropdownIndex = index;
-          el.classList.remove("clicked");
-        }
-      });
+    const arrayOfDropdownOpts = [
+      ...dropdownMenu.querySelectorAll(".nav_menu_link-dropdown"),
+    ];
+    this.dropdownIndex = arrayOfDropdownOpts.indexOf(clicked);
   };
   closeNavMenu = function () {
     this.allNavDropdowns.forEach(function (el) {
@@ -30,16 +25,13 @@ class Navbar {
     });
   };
   toggleNav = function (clicked) {
-    if (clicked) {
-      clicked
-        .closest(".nav_menu_link-wrap")
-        .querySelector(".nav_menu_dropdown")
-        .classList.toggle("active");
-    } else {
-      this.navMenu
-        .querySelector(".nav_menu_dropdown")
-        .classList.toggle("active");
-    }
+    const dropdown = clicked
+      ? clicked
+          .closest(".nav_menu_link-wrap")
+          .querySelector(".nav_menu_dropdown")
+      : this.navMenu.querySelector(".nav_menu_dropdown");
+
+    if (dropdown) dropdown.classList.toggle("active");
   };
 }
 export default new Navbar();

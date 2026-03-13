@@ -8,7 +8,6 @@ import {
 class Features {
   //.......................................................................
   //DEFINITIONS............................................................
-  featuresSection = document.querySelector(".section.features");
   featuresBlackout = document
     .querySelector(".section.features")
     .querySelector(".blackout");
@@ -34,6 +33,12 @@ class Features {
   featuresEndisCancelled;
   //.......................................................................
   //FUNCTIONS..............................................................
+  initSection = function () {
+    this.featuresBlackout.classList.add("off");
+    this.hideAllText();
+    this.showIntroText();
+    this.playFeaturesIntro();
+  };
   showFeaturesIntroVidDiv = function () {
     this.featuresIntroVidDiv.classList.add("active");
   };
@@ -63,8 +68,8 @@ class Features {
     global.enablePause(this.pauseWrapper);
     this.showText(clicked);
     global.setActiveVid();
-    global.setStartTime(clicked.getAttribute("startTime"));
-    global.setEndTime(clicked.getAttribute("endTime"));
+    global.setStartTime(clicked.dataset.startTime);
+    global.setEndTime(clicked.dataset.endTime);
     global.activateCurrentBtn(clicked);
     global.blackout.classList.remove("off");
     global.playRange();
@@ -88,30 +93,34 @@ class Features {
     }
   };
   clearFeaturesTimers = function () {
-    Features.featuresEndisCancelled = true;
-    clearTimeout(Features.featuresTimer);
-    Features.featuresTimer = null;
+    this.featuresEndisCancelled = true;
+    clearTimeout(this.featuresTimer);
+    this.featuresTimer = null;
   };
   playFeaturesIntro = function () {
     this.clearFeaturesTimers();
     this.showFeaturesIntroVidDiv();
     this.hideFeaturesVidDiv();
+
     setTimeout(() => {
-      if (!global.blackout.classList.contains("off")) {
-        global.blackout.classList.add("off");
-      }
-      if (!this.featuresBlackout.classList.contains("off")) {
-        this.featuresBlackout.classList.add("off");
-      }
+      global.blackout.classList.add("off");
+      this.featuresBlackout.classList.add("off");
     }, BLACKOUT_TIMER);
-    this.featuresIntroVidDiv
-      .querySelectorAll(".vid-code-intro")
-      .forEach(function (el) {
-        if (window.getComputedStyle(el).opacity != 0) {
-          el.querySelector(".vid-intro").currentTime = 0;
-          el.querySelector(".vid-intro").play();
+
+    // Logic: Find the one that isn't hidden (display: none)
+    const allIntros =
+      this.featuresIntroVidDiv.querySelectorAll(".vid-code-intro");
+
+    allIntros.forEach((el) => {
+      // offsetParent is null if the element is display: none
+      if (el.offsetParent !== null) {
+        const vid = el.querySelector(".vid-intro");
+        if (vid) {
+          vid.currentTime = 0;
+          vid.play();
         }
-      });
+      }
+    });
   };
 }
 export default new Features();

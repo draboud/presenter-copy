@@ -58,6 +58,53 @@ class Data {
   ctrlBtnIndex;
   //.......................................................................
   //FUNCTIONS..............................................................
+  initSection = function () {
+    //setting UI and logic...
+    this.dimmer.classList.remove("active");
+    this.txtOrImg = "image";
+    this.txtImgBtn.textContent = "image";
+    this.hideBackBtn();
+    this.hideAllData();
+    this.resetAllDataSheets();
+    this.showIntroText();
+    this.showCtrlBtnWrapper();
+
+    //setting vid element...
+    global.clearSectionVidSrc(); //reveal poster
+    this.setLastActiveView(); //for bckgrnd img
+    this.setDataVidBackgroundImg();
+  };
+  backToViewFromComp = function () {
+    //setting UI and logic...
+    this.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
+    this.txtOrImg = "image";
+    this.activeDataWrapper
+      .querySelector(".txt-img-btn")
+      .classList.remove("active");
+    this.hideAllData();
+    this.resetAllDataSheets();
+    this.dimmer.classList.remove("active");
+    this.showIntroText();
+    this.hideBackBtn();
+    this.showCtrlBtnWrapper();
+
+    //setting vid element...
+    this.setDataVidBackgroundImg();
+    global.clearSectionVidSrc(); //reveal poster
+  };
+  showCompImageOrText = function () {
+    if (this.txtOrImg === "image") {
+      this.txtOrImg = "text";
+      this.dimmer.classList.remove("active");
+      this.activeDataSheet.classList.remove("active");
+    } else {
+      this.txtOrImg = "image";
+      this.dimmer.classList.add("active");
+      this.activeDataSheet.classList.add("active");
+    }
+    this.activeDataWrapper.querySelector(".txt-img-btn").textContent =
+      this.txtOrImg;
+  };
   showIntroText = function () {
     this.introText.classList.add("active");
   };
@@ -151,15 +198,14 @@ class Data {
       return;
     }
     this.startTime =
-      this.allViewOptBtns[this.activeViewBtnIndex].getAttribute("startTime");
-    this.endTime =
-      this.allViewOptBtns[this.activeViewBtnIndex].getAttribute("endTime");
+      this.allViewOptBtns[this.activeViewBtnIndex].dataset.startTime;
+    this.endTime = this.allViewOptBtns[this.activeViewBtnIndex].dataset.endTime;
   };
   setDataVidStartAndEnd = function (clicked) {
     this.viewVidFlag = false;
     this.hideAllData();
-    this.startTime = clicked.getAttribute("startTime");
-    this.endTime = clicked.getAttribute("endTime");
+    this.startTime = clicked.dataset.startTime;
+    this.endTime = clicked.dataset.endTime;
   };
   setDataVidPoster = function (newValue) {
     if (!newValue) newValue = this.activeView;
