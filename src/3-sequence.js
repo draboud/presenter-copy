@@ -1,7 +1,7 @@
 class Sequence {
   constructor(globalController, container) {
     this.global = globalController;
-    this.container = container;
+    this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
     this.allIntroText = [
@@ -15,6 +15,7 @@ class Sequence {
     this.sequenceTimer = null;
     this.sequenceEndIsCancelled = false;
     this.sequenceIndex = 0;
+    this.dropdownClicked = false;
     this.eventMap = new Map([
       ["open-sequence", this.initSection.bind(this)],
       ["open-sequence-index", this.activateSectionIndex.bind(this)],
@@ -24,8 +25,18 @@ class Sequence {
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clicked, index) {
-    this.sequenceIndex = index ?? 0;
+  initSection = function (clicked) {
+    if (!this.dropdownClicked) {
+      this.global.activateCurrentNavLink(clicked);
+      this.sequenceIndex = 0;
+    } else {
+      this.global.activateCurrentNavLink(
+        clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
+      );
+      this.global.closeNavDropdown(clicked.closest(".nav_menu_dropdown"));
+      this.global.closeMobileNavMenu();
+      this.dropdownClicked = false;
+    }
     this.global.flashBlackout();
     this.pauseWrapper.classList.remove("active");
     this.global.disablePause();
@@ -33,17 +44,20 @@ class Sequence {
     this.hideAllActionHeadings();
     this.allIntroText[this.sequenceIndex].classList.add("active");
     this.setActiveSequenceVidWrap(this.sequenceIndex);
-    this.global.activateCurrentNavLink(
-      clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
+  };
+  activateSectionIndex = function (clicked) {
+    this.dropdownClicked = true;
+    this.sequenceIndex = this.global.getLocalIndex(
+      clicked,
+      "nav_menu_link-dropdown",
+      "nav_menu_dropdown",
     );
+    this.initSection(clicked);
   };
-  activateSectionIndex = function (clickedBtn) {
-    console.log(clickedBtn);
-  };
-  handleEvent = (eventAction, clickedBtn) => {
+  handleEvent = (trigger, eventAction) => {
     const action = this.eventMap.get(eventAction);
     if (action) {
-      action(clickedBtn);
+      action(trigger);
     } else {
       console.warn(`No action found for: ${eventAction}`);
     }

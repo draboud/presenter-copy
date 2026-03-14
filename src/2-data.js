@@ -11,7 +11,7 @@ import {
 class Data {
   constructor(globalController, container) {
     this.global = globalController;
-    this.container = container;
+    this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
     this.introText = this.container.querySelector(".section-wrap-txt");
@@ -64,7 +64,7 @@ class Data {
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clicked, index) {
+  initSection = function (clicked) {
     this.global.flashBlackout();
     //setting UI and logic...
     this.dimmer.classList.remove("active");
@@ -75,16 +75,16 @@ class Data {
     this.resetAllDataSheets();
     this.introText.classList.add("active");
     this.showCtrlBtnWrapper();
-
+    this.global.activateCurrentNavLink(clicked);
     //setting vid element...
     this.global.clearSectionVidSrc(); //reveal poster
     this.setLastActiveView(); //for bckgrnd img
     this.setDataVidBackgroundImg();
   };
-  handleEvent = (eventAction, clickedBtn) => {
+  handleEvent = (trigger, eventAction) => {
     const action = this.eventMap.get(eventAction);
     if (action) {
-      action(clickedBtn);
+      action(trigger);
     } else {
       console.warn(`No action found for: ${eventAction}`);
     }

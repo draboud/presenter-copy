@@ -25,8 +25,6 @@ class Features {
     ]);
   }
   //.......................................................................
-  //EVENT MAP..............................................................
-  //.......................................................................
   //FUNCTIONS..............................................................
   initSection = function (clicked, index, introFlag) {
     this.global.blackout.classList.add("off");
@@ -44,10 +42,10 @@ class Features {
     if (introFlag) return;
     this.playFeaturesIntro();
   };
-  handleEvent = (eventAction, clickedBtn) => {
+  handleEvent = (trigger, eventAction) => {
     const action = this.eventMap.get(eventAction);
     if (action) {
-      action(clickedBtn);
+      action(trigger);
     } else {
       console.warn(`No action found for: ${eventAction}`);
     }

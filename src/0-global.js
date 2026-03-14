@@ -6,12 +6,12 @@ export const blackout = document.querySelector(".blackout");
 export const allSections = [...document.querySelectorAll(".section")];
 export const allVidCodes = document.querySelectorAll(".vid-code");
 export const allVids = document.querySelectorAll(".vid");
-let activeSection;
-let activeSectionName;
-let activeVid;
-let startTime;
-let endTime;
-let pauseFlag;
+let activeSection = null;
+let activeSectionName = null;
+let activeVid = null;
+let startTime = 0;
+let endTime = 0;
+let pauseFlag = false;
 //.......................................................................
 //GLOBAL FUNCTIONS.......................................................
 export const flashBlackout = function () {
@@ -43,6 +43,14 @@ export const deactivateCurrentNavLinks = function () {
   document.querySelectorAll(".nav_menu_link").forEach(function (el) {
     el.classList.remove("current");
   });
+};
+export const closeNavDropdown = function (navDropdown) {
+  navDropdown.classList.remove("active");
+};
+export const closeMobileNavMenu = function () {
+  const mobileNavBtn = document.querySelector(".nav_button");
+  if (window.getComputedStyle(mobileNavBtn).display !== "none")
+    mobileNavBtn.click();
 };
 export const getActiveSection = function () {
   return activeSection;
@@ -173,16 +181,13 @@ export const playRange = function (videoCurrentTime) {
   }
 };
 export const disablePause = function () {
-  //..................CHECKED
   pauseFlag = false;
   activeSection.querySelector(".pause-wrapper").style.pointerEvents = "none";
 };
 export const enablePause = function () {
-  //..................CHECKED
   activeSection.querySelector(".pause-wrapper").style.pointerEvents = "auto";
 };
 export const togglePause = function () {
-  //..................CHECKED
   if (pauseFlag) {
     pauseFlag = false;
     activeVid.play();
@@ -225,7 +230,6 @@ export const deactivateCurrentBtns = function (section) {
   });
 };
 export const getLocalIndex = function (btn, btnClass, allBtnsWrapper) {
-  //..................CHECKED
   let localIndex;
   const allBtns = btn
     .closest(`.${allBtnsWrapper}`)

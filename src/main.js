@@ -1,12 +1,11 @@
-console.log("BRANCH: newModules-2");
+console.log("BRANCH: newModules-3");
 
 import { START_UI_REVEAL } from "./0-config";
 import * as global from "./0-global";
-import Navbar from "./0-navbar";
+import NavbarClass from "./0-navbar";
 import FeaturesClass from "./1-features";
 import DataClass from "./2-data";
 import SequenceClass from "./3-sequence";
-
 //.......................................................................
 //init call (function at bottom).........................................
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,14 +13,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 //.......................................................................
 //DEFINITIONS............................................................
+const navContainer = document.querySelector(".nav_component");
 const featuresContainer = document.querySelector(".section.features");
 const dataContainer = document.querySelector(".section.data");
 const sequenceContainer = document.querySelector(".section.sequence");
-
+const navbar = new NavbarClass(navContainer);
 const features = new FeaturesClass(global, featuresContainer);
 const data = new DataClass(global, dataContainer);
 const sequence = new SequenceClass(global, sequenceContainer);
 const SECTIONS = {
+  navbar: navbar,
   features: features,
   data: data,
   sequence: sequence,
@@ -29,119 +30,56 @@ const SECTIONS = {
 //.......................................................................
 //EVENT DELEGATION-NAV...................................................
 //nav_menu_link
-
-Navbar.navComponent.addEventListener("click", function (e) {
+navContainer.addEventListener("click", function (e) {
   const clicked = e.target.closest("[data-click-action]");
   if (!clicked) return;
   const activeSection = clicked.dataset.navSection;
   const targetModule = SECTIONS[activeSection];
   const action = clicked.dataset.clickAction;
-  if (activeSection === global.getActiveSectionName()) return;
   //1. Generic cleanup
   clearAllTimers();
   global.blackout.classList.remove("off");
   //2. State update
   global.setActiveSection(activeSection);
   //3. Polymorphic call
-  console.log(action);
-  targetModule.handleEvent(action, clicked);
+  targetModule.handleEvent(clicked, action);
 });
-
-// Navbar.navMenu.addEventListener("click", function (e) {
-//   const clicked = e.target.closest(".nav_menu_link");
-//   if (!clicked) return;
-//   const clickedSectionName = clicked.dataset.navSection;
-//   const targetModule = SECTIONS[clickedSectionName];
-//   if (clickedSectionName === global.getActiveSectionName()) return;
-//   //1. Generic cleanup
-//   clearAllTimers();
-//   global.blackout.classList.remove("off");
-//   //2. State update
-//   global.setActiveSection(clickedSectionName);
-//   //3. Polymorphic call
-//   targetModule.initSection(clicked);
-// });
-
-// Navbar.allNavDropdowns.forEach(function (el) {
-//   el.addEventListener("click", function (e) {
-//     const clicked = e.target.closest(".nav_menu_link-dropdown");
-//     if (!clicked) return;
-//     const clickedSectionName = clicked
-//       .closest(".nav_menu_link-wrap")
-//       .querySelector(".nav_menu_link").dataset.navSection;
-//     const dropdownIndex = global.getLocalIndex(
-//       clicked,
-//       "nav_menu_link-dropdown",
-//       "nav_menu_dropdown",
-//     );
-//     const targetModule = SECTIONS[clickedSectionName];
-//     //1. Generic cleanup
-//     global.flashBlackout();
-//     clearAllTimers();
-//     Navbar.closeNavMenu();
-//     if (window.getComputedStyle(Navbar.navBtn).display !== "none") {
-//       Navbar.navBtn.click();
-//     }
-//     //2. State update
-//     global.setActiveSection(clickedSectionName);
-//     //3. Polymorphic call
-//     targetModule.initSection(clicked, dropdownIndex);
-//   });
-// });
-
-// Navbar.navMenu.addEventListener("click", function (e) {
-//   const clicked = e.target.closest(".dropdown-icon");
-//   if (!clicked) return;
-//   Navbar.toggleNav(clicked);
-// });
-// Navbar.navBtn.addEventListener("click", function () {
-//   Navbar.closeNavMenu();
-// });
-// Navbar.allNavLinksWithDropdown.forEach(function (el) {
-//   el.addEventListener("mouseenter", function () {
-//     el.parentElement
-//       .querySelector(".nav_menu_dropdown")
-//       .classList.add("active");
-//   });
-// });
-// Navbar.allNavLinksWithDropdown.forEach(function (el) {
-//   el.addEventListener("mouseleave", function () {
-//     el.parentElement
-//       .querySelector(".nav_menu_dropdown")
-//       .classList.remove("active");
-//   });
-// });
-// Navbar.allNavDropdowns.forEach(function (el) {
-//   el.addEventListener("mouseenter", function () {
-//     el.classList.add("active");
-//   });
-// });
-// Navbar.allNavDropdowns.forEach(function (el) {
-//   el.addEventListener("mouseleave", function () {
-//     el.classList.remove("active");
-//   });
-// });
-
+navContainer.addEventListener("mouseover", function (e) {
+  const hovered = e.target.closest("[data-mouseover-action]");
+  if (!hovered) return;
+  if (this.currentHover === hovered) return; // Exit if we are already hovering it
+  this.currentHover = hovered;
+  const action = hovered.dataset.mouseoverAction;
+  navbar.handleEvent(hovered, action);
+});
+navContainer.addEventListener("mouseout", function (e) {
+  const hovered = e.target.closest("[data-mouseout-action]");
+  if (!hovered) return;
+  // If the mouse moved to a child of the same button, don't trigger the "Exit"
+  if (hovered.contains(e.relatedTarget)) return;
+  this.currentHover = null;
+  const action = hovered.dataset.mouseoutAction;
+  navbar.handleEvent(hovered, action);
+});
 //.......................................................................
-//EVENT DELEGATION-BTNS..................................................
+//EVENT DELEGATION-MAIN BODY.............................................
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest("[data-click-action]");
   if (!clicked) return;
   const activeSection = clicked.closest(".section").dataset.section;
   const targetModule = SECTIONS[activeSection];
   const action = clicked.dataset.clickAction;
-  targetModule.handleEvent(action, clicked);
+  targetModule.handleEvent(clicked, action);
 });
 global.mainWrapper.addEventListener("mouseover", function (e) {
   const hovered = e.target.closest("[data-mouseover-action]");
   if (!hovered) return;
   if (this.currentHover === hovered) return; // Exit if we are already hovering it
   this.currentHover = hovered;
-
   const activeSection = hovered.closest(".section").dataset.section;
   const targetModule = SECTIONS[activeSection];
   const action = hovered.dataset.mouseoverAction;
-  targetModule.handleEvent(action, hovered);
+  targetModule.handleEvent(hovered, action);
 });
 global.mainWrapper.addEventListener("mouseout", function (e) {
   const hovered = e.target.closest("[data-mouseout-action]");
@@ -149,11 +87,10 @@ global.mainWrapper.addEventListener("mouseout", function (e) {
   // If the mouse moved to a child of the same button, don't trigger the "Exit"
   if (hovered.contains(e.relatedTarget)) return;
   this.currentHover = null;
-
   const activeSection = hovered.closest(".section").dataset.section;
   const targetModule = SECTIONS[activeSection];
   const action = hovered.dataset.mouseoutAction;
-  targetModule.handleEvent(action, hovered);
+  targetModule.handleEvent(hovered, action);
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................
@@ -180,8 +117,8 @@ global.allVids.forEach(function (el) {
 const init = function () {
   setupLazyLoading();
   global.blackout.classList.remove("off");
-  Navbar.navComponent.classList.remove("active");
-  Navbar.allNavDropdowns.forEach(function (el) {
+  navContainer.classList.remove("active");
+  navbar.allNavDropdowns.forEach(function (el) {
     el.classList.remove("active");
   });
   global.setActiveSection("features");
@@ -191,7 +128,7 @@ const init = function () {
   //.......................................................................
   //.......................................................................
   setTimeout(() => {
-    Navbar.navComponent.classList.add("active");
+    navContainer.classList.add("active");
     features.initSection(null, null, true);
   }, START_UI_REVEAL);
   //.......................................................................
