@@ -16,19 +16,29 @@ class Sequence {
     this.sequenceEndIsCancelled = false;
     this.sequenceIndex = 0;
     this.eventMap = new Map([
+      ["open-sequence", this.initSection.bind(this)],
+      ["open-sequence-index", this.activateSectionIndex.bind(this)],
       ["play-ctrl-vid", this.playCtrlBtnVid.bind(this)],
       ["pause-ctrl-vid", this.pauseCtrlVid.bind(this)],
     ]);
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clickedNavLink, index) {
+  initSection = function (clicked, index) {
     this.sequenceIndex = index ?? 0;
     this.global.flashBlackout();
+    this.pauseWrapper.classList.remove("active");
+    this.global.disablePause();
     this.hideAllIntroText();
     this.hideAllActionHeadings();
     this.allIntroText[this.sequenceIndex].classList.add("active");
-    this.setActiveSequenceVidWrap();
+    this.setActiveSequenceVidWrap(this.sequenceIndex);
+    this.global.activateCurrentNavLink(
+      clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
+    );
+  };
+  activateSectionIndex = function (clickedBtn) {
+    console.log(clickedBtn);
   };
   handleEvent = (eventAction, clickedBtn) => {
     const action = this.eventMap.get(eventAction);

@@ -224,12 +224,12 @@ export const deactivateCurrentBtns = function (section) {
     el.classList.remove("current");
   });
 };
-export const getCtrlBtnIndex = function (btn) {
+export const getLocalIndex = function (btn, btnClass, allBtnsWrapper) {
   //..................CHECKED
   let localIndex;
   const allBtns = btn
-    .closest(".section-wrap-btns")
-    .querySelectorAll(".ctrl-btn");
+    .closest(`.${allBtnsWrapper}`)
+    .querySelectorAll(`.${btnClass}`);
   allBtns.forEach(function (el, index) {
     if (el === btn) localIndex = index;
   });

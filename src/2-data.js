@@ -53,6 +53,7 @@ class Data {
     this.activeCtrlBtnWrapper = this.allCtrlBtnWrappers[0];
     this.ctrlBtnIndex = null;
     this.eventMap = new Map([
+      ["open-data", this.initSection.bind(this)],
       ["play-ctrl-vid", this.setAndPlayCtrlBtnVid.bind(this)],
       ["play-view-vid", this.setAndPlayViewVid.bind(this)],
       ["back-to-view", this.backToViewFromComp.bind(this)],
@@ -63,7 +64,7 @@ class Data {
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function () {
+  initSection = function (clicked, index) {
     this.global.flashBlackout();
     //setting UI and logic...
     this.dimmer.classList.remove("active");
@@ -283,7 +284,11 @@ class Data {
     this.setLastActiveView(); //for the bckgrnd img to change to comp vid starts
     this.setDataVidBackgroundImg();
     this.hideActiveCtrlBtnWrapper();
-    this.ctrlBtnIndex = this.global.getCtrlBtnIndex(clickedCtrlBtn);
+    this.ctrlBtnIndex = this.global.getLocalIndex(
+      clickedCtrlBtn,
+      "ctrl-btn",
+      "section-wrap-btns",
+    );
 
     //play
     this.setDataVidStartAndEnd(clickedCtrlBtn);

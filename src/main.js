@@ -18,15 +18,9 @@ const featuresContainer = document.querySelector(".section.features");
 const dataContainer = document.querySelector(".section.data");
 const sequenceContainer = document.querySelector(".section.sequence");
 
-// Main.js
-// const allSequenceContainers = document.querySelectorAll(".section.sequence");
-
 const features = new FeaturesClass(global, featuresContainer);
 const data = new DataClass(global, dataContainer);
 const sequence = new SequenceClass(global, sequenceContainer);
-// const sequenceInstances = Array.from(allSequenceContainers).map((el) => {
-//   return new SequenceClass(global, el);
-// });
 const SECTIONS = {
   features: features,
   data: data,
@@ -35,81 +29,101 @@ const SECTIONS = {
 //.......................................................................
 //EVENT DELEGATION-NAV...................................................
 //nav_menu_link
-Navbar.navMenu.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".nav_menu_link");
+
+Navbar.navComponent.addEventListener("click", function (e) {
+  const clicked = e.target.closest("[data-click-action]");
   if (!clicked) return;
-  const clickedSectionName = clicked.dataset.navSection;
-  const targetModule = SECTIONS[clickedSectionName];
-  if (clickedSectionName === global.getActiveSectionName()) return;
+  const activeSection = clicked.dataset.navSection;
+  const targetModule = SECTIONS[activeSection];
+  const action = clicked.dataset.clickAction;
+  if (activeSection === global.getActiveSectionName()) return;
   //1. Generic cleanup
   clearAllTimers();
   global.blackout.classList.remove("off");
-  features.pauseWrapper.classList.remove("active");
-  sequence.pauseWrapper.classList.remove("active");
   //2. State update
-  global.setActiveSection(clickedSectionName);
+  global.setActiveSection(activeSection);
   //3. Polymorphic call
-  targetModule.initSection(clicked);
+  console.log(action);
+  targetModule.handleEvent(action, clicked);
 });
 
-Navbar.navMenu.addEventListener("click", function (e) {
-  const clicked = e.target.closest(".dropdown-icon");
-  if (!clicked) return;
-  Navbar.toggleNav(clicked);
-});
-Navbar.navBtn.addEventListener("click", function () {
-  Navbar.closeNavMenu();
-});
-Navbar.allNavLinksWithDropdown.forEach(function (el) {
-  el.addEventListener("mouseenter", function () {
-    el.parentElement
-      .querySelector(".nav_menu_dropdown")
-      .classList.add("active");
-  });
-});
-Navbar.allNavLinksWithDropdown.forEach(function (el) {
-  el.addEventListener("mouseleave", function () {
-    el.parentElement
-      .querySelector(".nav_menu_dropdown")
-      .classList.remove("active");
-  });
-});
-Navbar.allNavDropdowns.forEach(function (el) {
-  el.addEventListener("mouseenter", function () {
-    el.classList.add("active");
-  });
-});
-Navbar.allNavDropdowns.forEach(function (el) {
-  el.addEventListener("mouseleave", function () {
-    el.classList.remove("active");
-  });
-});
-Navbar.allNavDropdowns.forEach(function (el) {
-  el.addEventListener("click", function (e) {
-    const clicked = e.target.closest(".nav_menu_link-dropdown");
-    if (!clicked) return;
-    clearAllTimers();
-    global.deactivateCurrentBtns();
-    Navbar.closeNavMenu();
-    if (window.getComputedStyle(Navbar.navBtn).display !== "none") {
-      Navbar.navBtn.click();
-    }
-    Navbar.getDropdownIndex(clicked);
-    global.setActiveSection("sequence");
-    sequence.initSection(null, Navbar.dropdownIndex);
-    global.flashBlackout();
-    global.disablePause();
-    global.clearSectionVidSrc();
-    global.activateCurrentNavLink(
-      clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
-    );
-    global.enableSectionCtrlBtnEvents();
-  });
-});
+// Navbar.navMenu.addEventListener("click", function (e) {
+//   const clicked = e.target.closest(".nav_menu_link");
+//   if (!clicked) return;
+//   const clickedSectionName = clicked.dataset.navSection;
+//   const targetModule = SECTIONS[clickedSectionName];
+//   if (clickedSectionName === global.getActiveSectionName()) return;
+//   //1. Generic cleanup
+//   clearAllTimers();
+//   global.blackout.classList.remove("off");
+//   //2. State update
+//   global.setActiveSection(clickedSectionName);
+//   //3. Polymorphic call
+//   targetModule.initSection(clicked);
+// });
+
+// Navbar.allNavDropdowns.forEach(function (el) {
+//   el.addEventListener("click", function (e) {
+//     const clicked = e.target.closest(".nav_menu_link-dropdown");
+//     if (!clicked) return;
+//     const clickedSectionName = clicked
+//       .closest(".nav_menu_link-wrap")
+//       .querySelector(".nav_menu_link").dataset.navSection;
+//     const dropdownIndex = global.getLocalIndex(
+//       clicked,
+//       "nav_menu_link-dropdown",
+//       "nav_menu_dropdown",
+//     );
+//     const targetModule = SECTIONS[clickedSectionName];
+//     //1. Generic cleanup
+//     global.flashBlackout();
+//     clearAllTimers();
+//     Navbar.closeNavMenu();
+//     if (window.getComputedStyle(Navbar.navBtn).display !== "none") {
+//       Navbar.navBtn.click();
+//     }
+//     //2. State update
+//     global.setActiveSection(clickedSectionName);
+//     //3. Polymorphic call
+//     targetModule.initSection(clicked, dropdownIndex);
+//   });
+// });
+
+// Navbar.navMenu.addEventListener("click", function (e) {
+//   const clicked = e.target.closest(".dropdown-icon");
+//   if (!clicked) return;
+//   Navbar.toggleNav(clicked);
+// });
+// Navbar.navBtn.addEventListener("click", function () {
+//   Navbar.closeNavMenu();
+// });
+// Navbar.allNavLinksWithDropdown.forEach(function (el) {
+//   el.addEventListener("mouseenter", function () {
+//     el.parentElement
+//       .querySelector(".nav_menu_dropdown")
+//       .classList.add("active");
+//   });
+// });
+// Navbar.allNavLinksWithDropdown.forEach(function (el) {
+//   el.addEventListener("mouseleave", function () {
+//     el.parentElement
+//       .querySelector(".nav_menu_dropdown")
+//       .classList.remove("active");
+//   });
+// });
+// Navbar.allNavDropdowns.forEach(function (el) {
+//   el.addEventListener("mouseenter", function () {
+//     el.classList.add("active");
+//   });
+// });
+// Navbar.allNavDropdowns.forEach(function (el) {
+//   el.addEventListener("mouseleave", function () {
+//     el.classList.remove("active");
+//   });
+// });
+
 //.......................................................................
 //EVENT DELEGATION-BTNS..................................................
-//.......................................................................
-//.......................................................................
 global.mainWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest("[data-click-action]");
   if (!clicked) return;
@@ -178,7 +192,7 @@ const init = function () {
   //.......................................................................
   setTimeout(() => {
     Navbar.navComponent.classList.add("active");
-    features.initSection(null, true);
+    features.initSection(null, null, true);
   }, START_UI_REVEAL);
   //.......................................................................
   //.......................................................................

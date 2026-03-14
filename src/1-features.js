@@ -19,6 +19,7 @@ class Features {
     this.featuresTimer = null;
     this.featuresEndisCancelled = false;
     this.eventMap = new Map([
+      ["open-features", this.initSection.bind(this)],
       ["play-ctrl-vid", this.playCtrlBtnVid.bind(this)],
       ["pause-ctrl-vid", this.pauseCtrlVid.bind(this)],
     ]);
@@ -27,11 +28,13 @@ class Features {
   //EVENT MAP..............................................................
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clickedNavLink, introFlag) {
+  initSection = function (clicked, index, introFlag) {
     this.global.blackout.classList.add("off");
     this.featuresBlackout.classList.add("off");
-    if (clickedNavLink) {
-      this.global.activateCurrentNavLink(clickedNavLink);
+    this.pauseWrapper.classList.remove("active");
+    this.global.disablePause();
+    if (clicked) {
+      this.global.activateCurrentNavLink(clicked);
       this.global.flashBlackout();
     }
     this.global.enableSectionCtrlBtnEvents();
@@ -99,7 +102,11 @@ class Features {
     this.pauseWrapper.classList.remove("active");
     this.hideFeaturesIntroVidDiv();
     this.showFeaturesVidDiv();
-    this.btnIndex = this.global.getCtrlBtnIndex(clickedCtrlBtn);
+    this.btnIndex = this.global.getLocalIndex(
+      clickedCtrlBtn,
+      "ctrl-btn",
+      "section-wrap-btns",
+    );
     this.featuresEndisCancelled = false;
     this.hideAllText();
     this.showFeatureText();
