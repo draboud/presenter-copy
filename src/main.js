@@ -1,6 +1,6 @@
-console.log("BRANCH: newModules-3");
+console.log("BRANCH: newModules-5");
 
-import { START_UI_REVEAL } from "./0-config";
+import { TIMING } from "./0-config";
 import * as global from "./0-global";
 import NavbarClass from "./0-navbar";
 import FeaturesClass from "./1-features";
@@ -29,7 +29,6 @@ const SECTIONS = {
 };
 //.......................................................................
 //EVENT DELEGATION-NAV...................................................
-//nav_menu_link
 navContainer.addEventListener("click", function (e) {
   const clicked = e.target.closest("[data-click-action]");
   if (!clicked) return;
@@ -37,7 +36,6 @@ navContainer.addEventListener("click", function (e) {
   const targetModule = SECTIONS[activeSection];
   const action = clicked.dataset.clickAction;
   //1. Generic cleanup
-  clearAllTimers();
   global.blackout.classList.remove("off");
   //2. State update
   global.setActiveSection(activeSection);
@@ -60,6 +58,17 @@ navContainer.addEventListener("mouseout", function (e) {
   this.currentHover = null;
   const action = hovered.dataset.mouseoutAction;
   navbar.handleEvent(hovered, action);
+});
+//Custom event: features vid end
+window.addEventListener("featuresVidEnded", function (e) {
+  navbar.disableNavLinksAndNavBtn();
+});
+//Custom event: sequence dropdown opt clicked
+window.addEventListener("dropdownOptClicked", function (e) {
+  const clicked = e.detail;
+  if (!clicked) return;
+  navbar.closeNavDropdown(clicked);
+  navbar.closeMobileNavMenu();
 });
 //.......................................................................
 //EVENT DELEGATION-MAIN BODY.............................................
@@ -94,21 +103,14 @@ global.mainWrapper.addEventListener("mouseout", function (e) {
 });
 //.......................................................................
 //EVENT DELEGATION-VIDS..................................................
-//ended
+//vid ended
 global.allVids.forEach(function (el) {
-  el.addEventListener("ended", function () {
-    const vidType = global.getVidType(el);
-    switch (vidType) {
-      case "features":
-        features.vidEnd();
-        break;
-      case "data":
-        data.vidEnd(el.closest(".vid"));
-        break;
-      case "sequence":
-        sequence.vidEnd();
-        break;
-    }
+  el.addEventListener("ended", function (e) {
+    const endedVid = e.target.closest(".vid");
+    if (!endedVid) return;
+    const vidSection = endedVid.closest(".section").dataset.section;
+    const targetModule = SECTIONS[vidSection];
+    targetModule.vidEnd();
   });
 });
 //.......................................................................
@@ -130,7 +132,7 @@ const init = function () {
   setTimeout(() => {
     navContainer.classList.add("active");
     features.initSection(null, null, true);
-  }, START_UI_REVEAL);
+  }, TIMING.START_UI_REVEAL);
   //.......................................................................
   //.......................................................................
 };
@@ -190,9 +192,4 @@ const setupLazyLoading = function () {
     });
     global.deactivateCurrentBtns(section);
   };
-};
-//features and sequence timers
-const clearAllTimers = function () {
-  features.clearFeaturesTimers();
-  sequence.clearSequenceTimers();
 };

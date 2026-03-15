@@ -1,4 +1,4 @@
-import { BLACKOUT_WAIT_TO_REVEAL, VID_END_TIMER } from "./0-config";
+import { TIMING } from "./0-config";
 
 class Features {
   constructor(globalController, container) {
@@ -134,8 +134,9 @@ class Features {
           this.global.enableNavLinksAndNavBtn();
           this.global.enableSectionCtrlBtnEvents();
           this.playFeaturesIntro();
-        }, BLACKOUT_WAIT_TO_REVEAL);
-      }, VID_END_TIMER);
+        }, TIMING.BLACKOUT_WAIT_TO_REVEAL);
+      }, TIMING.VID_END_TIMER);
+      window.dispatchEvent(new CustomEvent("featuresVidEnded"));
     }
   };
   deactivateCurrentBtns = function () {

@@ -33,8 +33,9 @@ class Sequence {
       this.global.activateCurrentNavLink(
         clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
       );
-      this.global.closeNavDropdown(clicked.closest(".nav_menu_dropdown"));
-      this.global.closeMobileNavMenu();
+      window.dispatchEvent(
+        new CustomEvent("dropdownOptClicked", { detail: clicked }),
+      );
       this.dropdownClicked = false;
     }
     this.global.flashBlackout();
@@ -103,6 +104,7 @@ class Sequence {
   };
   vidEnd = function () {
     if (this.sequenceEndIsCancelled === false) {
+      this.pauseWrapper.classList.remove("active");
       this.global.disablePause(this.pauseWrapper);
     }
   };

@@ -1,12 +1,4 @@
-import {
-  DATA_VIEW_1,
-  DATA_VIEW_1_MP,
-  DATA_VIEW_2,
-  DATA_VIEW_2_MP,
-  DATA_VIEW_3,
-  DATA_VIEW_3_MP,
-  VIEW_START_END,
-} from "./0-config";
+import { IMAGES, VIEW_START_END } from "./0-config";
 
 class Data {
   constructor(globalController, container) {
@@ -202,23 +194,23 @@ class Data {
       return;
     if (activeVid.parentElement.classList.contains("mp")) {
       if (newValue === "view-a") {
-        activeVid.setAttribute("poster", DATA_VIEW_1_MP);
+        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1_MP);
       }
       if (newValue === "view-b") {
-        activeVid.setAttribute("poster", DATA_VIEW_2_MP);
+        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2_MP);
       }
       if (newValue === "view-c") {
-        activeVid.setAttribute("poster", DATA_VIEW_3_MP);
+        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3_MP);
       }
     } else {
       if (newValue === "view-a") {
-        activeVid.setAttribute("poster", DATA_VIEW_1);
+        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1);
       }
       if (newValue === "view-b") {
-        activeVid.setAttribute("poster", DATA_VIEW_2);
+        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2);
       }
       if (newValue === "view-c") {
-        activeVid.setAttribute("poster", DATA_VIEW_3);
+        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3);
       }
     }
   };
@@ -227,23 +219,23 @@ class Data {
     const activeVidWrap = activeVid.closest(".vid-wrapper");
     if (activeVid.parentElement.classList.contains("mp")) {
       if (this.lastActiveView.view === "view-a") {
-        activeVidWrap.style.backgroundImage = `url("${DATA_VIEW_1_MP}")`;
+        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1_MP}")`;
       }
       if (this.lastActiveView.view === "view-b") {
-        activeVidWrap.style.backgroundImage = `url("${DATA_VIEW_2_MP}")`;
+        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2_MP}")`;
       }
       if (this.lastActiveView.view === "view-c") {
-        activeVidWrap.style.backgroundImage = `url("${DATA_VIEW_3_MP}")`;
+        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3_MP}")`;
       }
     } else {
       if (this.lastActiveView.view === "view-a") {
-        activeVidWrap.style.backgroundImage = `url("${DATA_VIEW_1}")`;
+        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1}")`;
       }
       if (this.lastActiveView.view === "view-b") {
-        activeVidWrap.style.backgroundImage = `url("${DATA_VIEW_2}")`;
+        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2}")`;
       }
       if (this.lastActiveView.view === "view-c") {
-        activeVidWrap.style.backgroundImage = `url("${DATA_VIEW_3}")`;
+        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3}")`;
       }
     }
   };
@@ -254,7 +246,6 @@ class Data {
   };
   setAndPlayViewVid = function (clickedViewOptsBtn) {
     //setting UI and logic...
-    this.global.disableNavLinksAndNavBtn();
     clickedViewOptsBtn.classList.add("active"); //for Data.setActiveViewBtnIndex
     this.setActiveViewBtnIndex();
     this.viewOptsMenu.classList.remove("active");
@@ -264,13 +255,6 @@ class Data {
 
     //setting vid element...
     this.global.setActiveVid();
-    this.global
-      .getActiveSection()
-      .querySelectorAll(".vid-code")
-      .forEach(function (el) {
-        el.classList.add("active");
-      }); //so global.setActiveVid can pick dt or mp from actives
-    this.setLastActiveView(); //for the bckgrnd img
     this.setDataVidBackgroundImg();
     this.setActiveView(clickedViewOptsBtn.textContent); //for the poster
 
@@ -303,6 +287,8 @@ class Data {
   };
   vidEnd = function () {
     if (this.viewVidFlag && !this.viewChainFlag) {
+      this.setLastActiveView();
+      this.setDataVidBackgroundImg();
       this.setDataVidPoster(); //done here so poster doesn't appear earlier
       this.showActiveCtrlBtnWrapper();
       this.introText.classList.add("active");

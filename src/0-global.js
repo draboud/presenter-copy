@@ -1,4 +1,4 @@
-import { BLACKOUT_TIMER } from "./0-config";
+import { TIMING } from "./0-config";
 //.......................................................................
 //DEFINITIONS............................................................
 export const mainWrapper = document.querySelector(".main-wrapper");
@@ -6,6 +6,9 @@ export const blackout = document.querySelector(".blackout");
 export const allSections = [...document.querySelectorAll(".section")];
 export const allVidCodes = document.querySelectorAll(".vid-code");
 export const allVids = document.querySelectorAll(".vid");
+export const navMenu = document.querySelector(".nav_menu");
+export const allNavMenuLinks = document.querySelectorAll(".nav_menu_link");
+export const navBtn = document.querySelector(".nav_button");
 let activeSection = null;
 let activeSectionName = null;
 let activeVid = null;
@@ -14,49 +17,29 @@ let endTime = 0;
 let pauseFlag = false;
 //.......................................................................
 //GLOBAL FUNCTIONS.......................................................
+
+export const getVidType = function (video) {
+  return video.closest(".section").classList[1];
+};
+
 export const flashBlackout = function () {
   blackout.classList.remove("off");
   setTimeout(function () {
     blackout.classList.add("off");
-  }, BLACKOUT_TIMER);
+  }, TIMING.BLACKOUT_TIMER);
 };
 export const enableNavLinksAndNavBtn = function () {
-  document.querySelector(".nav_menu").style.pointerEvents = "auto";
-  document.querySelector(".nav_button").style.pointerEvents = "auto";
-};
-export const disableNavLinksAndNavBtn = function () {
-  document.querySelector(".nav_menu").style.pointerEvents = "none";
-  if (
-    window.getComputedStyle(document.querySelector(".nav_menu")).display ===
-    "block"
-  ) {
-    document.querySelector(".nav_button").click();
-  }
-
-  document.querySelector(".nav_button").style.pointerEvents = "none";
+  navMenu.style.pointerEvents = "auto";
+  navBtn.style.pointerEvents = "auto";
 };
 export const activateCurrentNavLink = function (clicked) {
   deactivateCurrentNavLinks();
   clicked.classList.add("current");
 };
 export const deactivateCurrentNavLinks = function () {
-  document.querySelectorAll(".nav_menu_link").forEach(function (el) {
+  allNavMenuLinks.forEach(function (el) {
     el.classList.remove("current");
   });
-};
-export const closeNavDropdown = function (navDropdown) {
-  navDropdown.classList.remove("active");
-};
-export const closeMobileNavMenu = function () {
-  const mobileNavBtn = document.querySelector(".nav_button");
-  if (window.getComputedStyle(mobileNavBtn).display !== "none")
-    mobileNavBtn.click();
-};
-export const getActiveSection = function () {
-  return activeSection;
-};
-export const getActiveSectionName = function () {
-  return activeSectionName;
 };
 export const setActiveSection = function (sectionName, index) {
   deactivateAllSections();
@@ -75,9 +58,6 @@ export const deactivateAllSections = function () {
   allSections.forEach(function (el) {
     el.classList.remove("active");
   });
-};
-export const getVidType = function (video) {
-  return video.closest(".section").dataset.section;
 };
 export function getActiveVid() {
   return activeVid;
@@ -108,9 +88,13 @@ export const resetAllSectionVids = function () {
   });
 };
 export const playRange = function (videoCurrentTime) {
-  //..................CHECKED
   const vidCode = activeVid.parentElement;
   const targetStart = videoCurrentTime || startTime;
+
+  // CLEANUP: Kill any previous monitor before starting a new one
+  if (activeVid._currentMonitor) {
+    activeVid.removeEventListener("timeupdate", activeVid._currentMonitor);
+  }
 
   // 1. HIDDEN STATE: Instant hide to reveal vid-wrapper background image
   if (vidCode) vidCode.style.opacity = "0";
@@ -180,6 +164,7 @@ export const playRange = function (videoCurrentTime) {
     });
   }
 };
+
 export const disablePause = function () {
   pauseFlag = false;
   activeSection.querySelector(".pause-wrapper").style.pointerEvents = "none";

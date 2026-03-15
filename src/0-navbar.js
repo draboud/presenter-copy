@@ -12,7 +12,6 @@ class Navbar {
     this.allNavDropdowns = [
       ...this.container.querySelectorAll(".nav_menu_dropdown"),
     ];
-    this.dropdownIndex = 0;
     this.eventMap = new Map([
       ["open-nav-dropdown", this.openNavDropdown.bind(this)],
       ["close-nav-dropdown", this.closeNavDropdown.bind(this)],
@@ -29,17 +28,21 @@ class Navbar {
       console.warn(`No action found for: ${eventAction}`);
     }
   };
-  getDropdownIndex = function (clicked) {
-    const dropdownMenu = clicked.closest(".nav_menu_dropdown");
-    const arrayOfDropdownOpts = [
-      ...dropdownMenu.querySelectorAll(".nav_menu_link-dropdown"),
-    ];
-    this.dropdownIndex = arrayOfDropdownOpts.indexOf(clicked);
-  };
   closeNavMenu = function () {
     this.allNavDropdowns.forEach(function (el) {
       el.classList.remove("active");
     });
+  };
+  closeMobileNavMenu = function () {
+    if (window.getComputedStyle(this.navBtn).display !== "none")
+      this.navBtn.click();
+  };
+  disableNavLinksAndNavBtn = function () {
+    this.navMenu.style.pointerEvents = "none";
+    if (window.getComputedStyle(this.navMenu).display !== "none") {
+      this.closeMobileNavMenu();
+    }
+    this.navBtn.style.pointerEvents = "none";
   };
   openNavDropdown = function (trigger) {
     trigger
