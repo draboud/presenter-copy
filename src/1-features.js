@@ -134,8 +134,8 @@ class Features {
           this.global.enableNavLinksAndNavBtn();
           this.global.enableSectionCtrlBtnEvents();
           this.playFeaturesIntro();
-        }, TIMING.BLACKOUT_WAIT_TO_REVEAL);
-      }, TIMING.VID_END_TIMER);
+        }, TIMING.UI.BLACKOUT_WAIT_TO_REVEAL);
+      }, TIMING.VIDEO.VID_END_TIMER);
       window.dispatchEvent(new CustomEvent("featuresVidEnded"));
     }
   };

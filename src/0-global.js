@@ -9,24 +9,24 @@ export const allVids = document.querySelectorAll(".vid");
 export const navMenu = document.querySelector(".nav_menu");
 export const allNavMenuLinks = document.querySelectorAll(".nav_menu_link");
 export const navBtn = document.querySelector(".nav_button");
-let activeSection = null;
-let activeSectionName = null;
-let activeVid = null;
-let startTime = 0;
-let endTime = 0;
-let pauseFlag = false;
+export const _state = {
+  activeSection: null,
+  activeSectionName: null,
+  activeVid: null,
+  startTime: 0,
+  endTime: 0,
+  pauseFlag: false,
+};
 //.......................................................................
 //GLOBAL FUNCTIONS.......................................................
-
-export const getVidType = function (video) {
+export const getVidType = (video) => {
   return video.closest(".section").classList[1];
 };
-
 export const flashBlackout = function () {
   blackout.classList.remove("off");
   setTimeout(function () {
     blackout.classList.add("off");
-  }, TIMING.BLACKOUT_TIMER);
+  }, TIMING.UI.BLACKOUT_TIMER);
 };
 export const enableNavLinksAndNavBtn = function () {
   navMenu.style.pointerEvents = "auto";
@@ -43,7 +43,7 @@ export const deactivateCurrentNavLinks = function () {
 };
 export const setActiveSection = function (sectionName, index) {
   deactivateAllSections();
-  activeSectionName = sectionName;
+  _state.activeSectionName = sectionName;
   if (!index) index = 0;
   const matches = allSections.filter(
     (el) => el.dataset.section === sectionName,
@@ -51,7 +51,7 @@ export const setActiveSection = function (sectionName, index) {
   const target = matches[index];
   if (target) {
     target.classList.add("active");
-    activeSection = target;
+    _state.activeSection = target;
   }
 };
 export const deactivateAllSections = function () {
@@ -59,77 +59,77 @@ export const deactivateAllSections = function () {
     el.classList.remove("active");
   });
 };
-export function getActiveVid() {
-  return activeVid;
-}
+export const getActiveVid = function () {
+  return _state.activeVid;
+};
 export function setActiveVid() {
   allVidCodes.forEach((el) => {
     if (el.offsetParent !== null) {
-      activeVid = el.querySelector(".vid");
+      _state.activeVid = el.querySelector(".vid");
     }
   });
 }
 export function setStartTime(newValue) {
-  startTime = newValue;
+  _state.startTime = newValue;
 }
 export function setEndTime(newValue) {
-  endTime = newValue;
+  _state.endTime = newValue;
 }
 export const clearSectionVidSrc = function () {
-  activeSection.querySelectorAll(".vid").forEach(function (el) {
+  _state.activeSection.querySelectorAll(".vid").forEach(function (el) {
     el.src = "";
     el.load();
   });
 };
 export const resetAllSectionVids = function () {
-  activeSection.querySelectorAll(".vid").forEach(function (el) {
+  _state.activeSection.querySelectorAll(".vid").forEach(function (el) {
     el.currentTime = 0;
     el.pause();
   });
 };
 export const playRange = function (videoCurrentTime) {
-  const vidCode = activeVid.parentElement;
-  const targetStart = videoCurrentTime || startTime;
-
+  const vidCode = _state.activeVid.parentElement;
+  const targetStart = videoCurrentTime || _state.startTime;
   // CLEANUP: Kill any previous monitor before starting a new one
-  if (activeVid._currentMonitor) {
-    activeVid.removeEventListener("timeupdate", activeVid._currentMonitor);
+  if (_state.activeVid._currentMonitor) {
+    _state.activeVid.removeEventListener(
+      "timeupdate",
+      _state.activeVid._currentMonitor,
+    );
   }
-
   // 1. HIDDEN STATE: Instant hide to reveal vid-wrapper background image
   if (vidCode) vidCode.style.opacity = "0";
-
   // Clear any existing timeupdate monitors
-  activeVid.removeEventListener("timeupdate", activeVid._currentMonitor);
-
+  _state.activeVid.removeEventListener(
+    "timeupdate",
+    _state.activeVid._currentMonitor,
+  );
   const monitorTime = () => {
-    if (activeVid.currentTime >= endTime - 0.15) {
-      activeVid.removeEventListener("timeupdate", monitorTime);
-      activeVid.pause();
-      activeVid.currentTime = endTime;
-      activeVid.dispatchEvent(new Event("ended"));
+    if (_state.activeVid.currentTime >= _state.endTime - 0.15) {
+      _state.activeVid.removeEventListener("timeupdate", monitorTime);
+      _state.activeVid.pause();
+      _state.activeVid.currentTime = _state.endTime;
+      _state.activeVid.dispatchEvent(new Event("ended"));
     }
   };
-  activeVid._currentMonitor = monitorTime;
-
+  _state.activeVid._currentMonitor = monitorTime;
   // Source handling
-  const source = activeVid.querySelector("source");
+  const source = _state.activeVid.querySelector("source");
   const dataSrc = source ? source.getAttribute("data-src") : null;
-  if (dataSrc && activeVid.src !== dataSrc) {
-    activeVid.pause();
-    activeVid.src = dataSrc;
-    activeVid.load();
+  if (dataSrc && _state.activeVid.src !== dataSrc) {
+    _state.activeVid.pause();
+    _state.activeVid.src = dataSrc;
+    _state.activeVid.load();
   }
-
   const startPlaybackSequence = async () => {
     try {
-      activeVid.currentTime = targetStart;
+      _state.activeVid.currentTime = targetStart;
 
       // 2. THE FAIL-SAFE REVEAL
       // We poll for physical playhead movement. Once it moves,
       // the "black buffer" is guaranteed to be gone.
       const pollForFrame = () => {
-        if (activeVid.currentTime > targetStart) {
+        if (_state.activeVid.currentTime > targetStart) {
           // Double RAF is the final guard for the GPU paint cycle
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -138,15 +138,14 @@ export const playRange = function (videoCurrentTime) {
                 blackout.classList.add("off");
             });
           });
-        } else if (!activeVid.paused) {
+        } else if (!_state.activeVid.paused) {
           // If still at targetStart but playing, check again next frame
           requestAnimationFrame(pollForFrame);
         }
       };
-
       // 3. START
-      activeVid.addEventListener("timeupdate", monitorTime);
-      await activeVid.play();
+      _state.activeVid.addEventListener("timeupdate", monitorTime);
+      await _state.activeVid.play();
       pollForFrame(); // Start checking for the first real frame
     } catch (e) {
       console.warn("Playback failed:", e);
@@ -154,44 +153,44 @@ export const playRange = function (videoCurrentTime) {
       if (vidCode) vidCode.style.opacity = "1";
     }
   };
-
   // Wait for data (readyState 3 is HAVE_FUTURE_DATA)
-  if (activeVid.readyState >= 3) {
+  if (_state.activeVid.readyState >= 3) {
     startPlaybackSequence();
   } else {
-    activeVid.addEventListener("canplay", startPlaybackSequence, {
+    _state.activeVid.addEventListener("canplay", startPlaybackSequence, {
       once: true,
     });
   }
 };
-
 export const disablePause = function () {
-  pauseFlag = false;
-  activeSection.querySelector(".pause-wrapper").style.pointerEvents = "none";
+  _state.pauseFlag = false;
+  _state.activeSection.querySelector(".pause-wrapper").style.pointerEvents =
+    "none";
 };
 export const enablePause = function () {
-  activeSection.querySelector(".pause-wrapper").style.pointerEvents = "auto";
+  _state.activeSection.querySelector(".pause-wrapper").style.pointerEvents =
+    "auto";
 };
 export const togglePause = function () {
-  if (pauseFlag) {
-    pauseFlag = false;
-    activeVid.play();
+  if (_state.pauseFlag) {
+    _state.pauseFlag = false;
+    _state.activeVid.play();
   } else {
-    pauseFlag = true;
-    activeVid.pause();
+    _state.pauseFlag = true;
+    _state.activeVid.pause();
   }
 };
 export const enableSectionCtrlBtnEvents = function () {
-  activeSection.querySelector(".section-wrap-btns").style.pointerEvents =
+  _state.activeSection.querySelector(".section-wrap-btns").style.pointerEvents =
     "auto";
 };
 export const disableSectionCtrlBtnEvents = function () {
-  activeSection.querySelector(".section-wrap-btns").style.pointerEvents =
+  _state.activeSection.querySelector(".section-wrap-btns").style.pointerEvents =
     "none";
 };
 export const setActiveCtrlBtnWrapper = function (btnWrapperIndex) {
   deactivateAllCtrlBtnWrappers();
-  activeSection
+  _state.activeSection
     .querySelectorAll(".section-wrap-btns")
     .forEach(function (el, index) {
       if (index === btnWrapperIndex) {
@@ -200,16 +199,18 @@ export const setActiveCtrlBtnWrapper = function (btnWrapperIndex) {
     });
 };
 export const deactivateAllCtrlBtnWrappers = function () {
-  activeSection.querySelectorAll(".section-wrap-btns").forEach(function (el) {
-    el.classList.remove("active");
-  });
+  _state.activeSection
+    .querySelectorAll(".section-wrap-btns")
+    .forEach(function (el) {
+      el.classList.remove("active");
+    });
 };
 export const activateCurrentBtn = function (btn) {
   deactivateCurrentBtns();
   btn.classList.add("current");
 };
 export const deactivateCurrentBtns = function (section) {
-  if (!section) section = activeSection;
+  if (!section) section = _state.activeSection;
   section.querySelectorAll(".ctrl-btn").forEach(function (el) {
     el.classList.remove("current");
   });

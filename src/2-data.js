@@ -1,4 +1,4 @@
-import { IMAGES, VIEW_START_END } from "./0-config";
+import { ASSETS, VIEW_START_END } from "./0-config";
 
 class Data {
   constructor(globalController, container) {
@@ -194,23 +194,29 @@ class Data {
       return;
     if (activeVid.parentElement.classList.contains("mp")) {
       if (newValue === "view-a") {
-        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1_MP);
+        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1_MP);
+        activeVid.setAttribute("poster", ASSETS["view-a"].mobile);
       }
       if (newValue === "view-b") {
-        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2_MP);
+        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2_MP);
+        activeVid.setAttribute("poster", ASSETS["view-b"].mobile);
       }
       if (newValue === "view-c") {
-        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3_MP);
+        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3_MP);
+        activeVid.setAttribute("poster", ASSETS["view-c"].mobile);
       }
     } else {
       if (newValue === "view-a") {
-        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1);
+        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1);
+        activeVid.setAttribute("poster", ASSETS["view-a"].desktop);
       }
       if (newValue === "view-b") {
-        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2);
+        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2);
+        activeVid.setAttribute("poster", ASSETS["view-b"].desktop);
       }
       if (newValue === "view-c") {
-        activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3);
+        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3);
+        activeVid.setAttribute("poster", ASSETS["view-c"].desktop);
       }
     }
   };
@@ -219,23 +225,29 @@ class Data {
     const activeVidWrap = activeVid.closest(".vid-wrapper");
     if (activeVid.parentElement.classList.contains("mp")) {
       if (this.lastActiveView.view === "view-a") {
-        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1_MP}")`;
+        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1_MP}")`;
+        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-a"].mobile}")`;
       }
       if (this.lastActiveView.view === "view-b") {
-        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2_MP}")`;
+        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2_MP}")`;
+        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-b"].mobile}")`;
       }
       if (this.lastActiveView.view === "view-c") {
-        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3_MP}")`;
+        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3_MP}")`;
+        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-c"].mobile}")`;
       }
     } else {
       if (this.lastActiveView.view === "view-a") {
-        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1}")`;
+        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1}")`;
+        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-a"].desktop}")`;
       }
       if (this.lastActiveView.view === "view-b") {
-        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2}")`;
+        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2}")`;
+        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-b"].desktop}")`;
       }
       if (this.lastActiveView.view === "view-c") {
-        activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3}")`;
+        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3}")`;
+        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-c"].desktop}")`;
       }
     }
   };

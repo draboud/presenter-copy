@@ -1,4 +1,4 @@
-console.log("BRANCH: newModules-5");
+console.log("BRANCH: newModules-6");
 
 import { TIMING } from "./0-config";
 import * as global from "./0-global";
@@ -132,7 +132,7 @@ const init = function () {
   setTimeout(() => {
     navContainer.classList.add("active");
     features.initSection(null, null, true);
-  }, TIMING.START_UI_REVEAL);
+  }, TIMING.UI.START_UI_REVEAL);
   //.......................................................................
   //.......................................................................
 };
