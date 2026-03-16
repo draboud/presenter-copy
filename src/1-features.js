@@ -6,15 +6,23 @@ class Features {
     this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
-    this.featuresBlackout = this.container.querySelector(".blackout");
+    this.featuresBlackout = this.global.query(".blackout", this.container);
     this.featuresAllText = [
-      ...this.container.querySelectorAll(".text-wrapper"),
+      ...this.global.queryAll(".txt-wrapper", this.container),
     ];
-    this.featuresIntroVidDiv =
-      this.container.querySelector(".vid-wrapper.intro");
-    this.featuresVidDiv = this.container.querySelector(".vid-wrapper.features");
-    this.pauseWrapper = this.container.querySelector(".pause-wrapper");
-    this.featuresCtrlBtns = this.container.querySelector(".section-wrap-btns");
+    this.featuresIntroVidDiv = this.global.query(
+      ".vid-wrapper.intro",
+      this.container,
+    );
+    this.featuresVidDiv = this.global.query(
+      ".vid-wrapper.features",
+      this.container,
+    );
+    this.pauseWrapper = this.global.query(".pause-wrapper", this.container);
+    this.featuresCtrlBtns = this.global.query(
+      ".section-wrap-btns",
+      this.container,
+    );
     this.activeFeature = null;
     this.featuresTimer = null;
     this.featuresEndisCancelled = false;
@@ -27,10 +35,10 @@ class Features {
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = (clicked, index, introFlag) => {
+  initSection = (clicked, isIntro) => {
     this.global.blackout.classList.add("off");
-    this.featuresBlackout?.classList.add("off");
-    this.pauseWrapper?.classList.remove("active");
+    this.featuresBlackout.classList.add("off");
+    this.pauseWrapper.classList.remove("active");
     this.global.disablePause();
     if (clicked) {
       this.global.activateCurrentNavLink(clicked);
@@ -40,7 +48,8 @@ class Features {
     this.hideAllText();
     this.showIntroText();
     this.featuresCtrlBtns.classList.add("active");
-    if (introFlag) return;
+    if (isIntro) return;
+
     this.playFeaturesIntro();
   };
   handleEvent = (trigger, eventAction) => {
@@ -59,18 +68,18 @@ class Features {
   showIntroText = () => {
     this.featuresAllText
       .find((el) => el.dataset.textContent === "intro")
-      ?.classList.add("active");
+      .classList.add("active");
   };
   showFeatureText = () => {
     this.featuresAllText
       .find((el) => el.dataset.textContent === this.activeFeature)
-      ?.classList.add("active");
+      .classList.add("active");
   };
   showFeaturesIntroVidDiv = () => {
-    this.featuresIntroVidDiv?.classList.add("active");
+    this.featuresIntroVidDiv.classList.add("active");
   };
   hideFeaturesIntroVidDiv = () => {
-    this.featuresIntroVidDiv?.classList.remove("active");
+    this.featuresIntroVidDiv.classList.remove("active");
   };
   showFeaturesVidDiv = () => {
     this.featuresVidDiv.classList.add("active");
@@ -79,12 +88,12 @@ class Features {
     this.featuresVidDiv.classList.remove("active");
   };
   playFeaturesIntro = () => {
-    this.featuresBlackout?.classList.add("off");
+    this.featuresBlackout.classList.add("off");
     this.showFeaturesIntroVidDiv();
     this.hideFeaturesVidDiv();
     // Logic: Find the one that isn't hidden (display: none)
     const allIntros =
-      this.featuresIntroVidDiv?.querySelectorAll(".vid-code-intro");
+      this.featuresIntroVidDiv.querySelectorAll(".vid-code-intro");
     allIntros.forEach((el) => {
       // offsetParent is null if the element is display: none
       if (el.offsetParent !== null) {
@@ -100,7 +109,7 @@ class Features {
     this.clearFeaturesTimers();
     this.global.disablePause();
     this.global.enablePause();
-    this.pauseWrapper?.classList.remove("active");
+    this.pauseWrapper.classList.remove("active");
     this.hideFeaturesIntroVidDiv();
     this.showFeaturesVidDiv();
     this.activeFeature = clickedCtrlBtn.dataset.feature;
@@ -116,15 +125,15 @@ class Features {
   };
   pauseCtrlVid = () => {
     this.global.togglePause();
-    this.pauseWrapper?.classList.toggle("active");
+    this.pauseWrapper.classList.toggle("active");
   };
   vidEnd = () => {
     if (this.featuresEndisCancelled === false) {
       this.global.disableSectionCtrlBtnEvents();
       this.global.disablePause();
-      this.pauseWrapper?.classList.remove("active");
+      this.pauseWrapper.classList.remove("active");
       this.featuresTimer = setTimeout(() => {
-        this.featuresBlackout?.classList.remove("off");
+        this.featuresBlackout.classList.remove("off");
         setTimeout(() => {
           this.hideAllText();
           this.showIntroText();

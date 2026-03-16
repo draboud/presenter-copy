@@ -6,35 +6,35 @@ class Data {
     this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
-    this.introText = this.container.querySelector(".section-wrap-txt");
-    this.startTime;
-    this.endTime;
-    this.viewVidFlag;
-    this.viewOptsBtn = this.container.querySelector(".opts-menu_btn");
-    this.viewOptsMenu = this.container.querySelector(".opts-dropdown");
+    this.introText = this.global.query(".section-wrap-txt", this.container);
+    this.viewOptsBtn = this.global.query(".opts-menu_btn", this.container);
+    this.viewOptsMenu = this.global.query(".opts-dropdown", this.container);
     this.allViewOptBtns = [
-      ...this.container.querySelectorAll(".opts-menu_link"),
+      ...this.global.queryAll(".opts-menu_link", this.container),
     ];
-    // this.activeViewBtnIndex = null;
+    this.dimmer = this.global.query(".dimmer", this.container);
+    this.txtImgBtn = this.global.query(".txt-img-btn", this.container);
+    this.activeDataWrapper = this.global.query(
+      ".section-wrap-comp-data",
+      this.container,
+    );
+    this.allDataWrappers = [
+      ...this.global.queryAll(".section-wrap-comp-data", this.container),
+    ];
+    this.allData = [...this.global.queryAll(".comp-data-wrap", this.container)];
+    this.allCtrlBtnWrappers = [
+      ...this.global.queryAll(".section-wrap-btns", this.container),
+    ];
     this.activeViewBtn = null;
     this.activeView = "view-1";
     this.lastActiveView = { view: "view-1", startTime: 0, endTime: 0 };
+    this.viewVidFlag = false;
     this.viewChainFlag = false;
-    this.dimmer = this.container.querySelector(".dimmer");
-    this.txtImgBtn = this.container.querySelector(".txt-img-btn");
     this.txtOrImg = "image";
-    this.activeDataWrapper = this.container.querySelector(
-      ".section-wrap-comp-data",
-    );
-    this.allDataWrappers = [
-      ...this.container.querySelectorAll(".section-wrap-comp-data"),
-    ];
-    this.allData = [...this.container.querySelectorAll(".comp-data-wrap")];
     this.activeDataSheet = null;
-    this.allCtrlBtnWrappers = [
-      ...this.container.querySelectorAll(".section-wrap-btns"),
-    ];
     this.activeCtrlBtnWrapper = this.allCtrlBtnWrappers[0];
+    this.startTime = 0;
+    this.endTime = 0;
     this.activeCtrlBtn = null;
     this.eventMap = new Map([
       ["open-data", this.initSection],
@@ -59,13 +59,13 @@ class Data {
   initSection = (clicked) => {
     this.global.flashBlackout();
     //setting UI and logic...
-    this.dimmer?.classList.remove("active");
+    this.dimmer.classList.remove("active");
     this.txtOrImg = "image";
     this.txtImgBtn.textContent = "image";
     this.hideBackBtn();
     this.hideAllData();
     this.resetAllDataSheets();
-    this.introText?.classList.add("active");
+    this.introText.classList.add("active");
     this.showCtrlBtnWrapper();
     this.global.activateCurrentNavLink(clicked);
     //setting vid element...
@@ -82,20 +82,20 @@ class Data {
     }
   };
   showViewOptsMenu = () => {
-    this.viewOptsMenu?.classList.add("active");
+    this.viewOptsMenu.classList.add("active");
   };
   hideViewOptsMenu = () => {
-    this.viewOptsMenu?.classList.remove("active");
+    this.viewOptsMenu.classList.remove("active");
   };
   showCompImageOrText = () => {
     if (this.txtOrImg === "image") {
       this.txtOrImg = "text";
-      this.dimmer?.classList.remove("active");
-      this.activeDataSheet?.classList.remove("active");
+      this.dimmer.classList.remove("active");
+      this.activeDataSheet.classList.remove("active");
     } else {
       this.txtOrImg = "image";
-      this.dimmer?.classList.add("active");
-      this.activeDataSheet?.classList.add("active");
+      this.dimmer.classList.add("active");
+      this.activeDataSheet.classList.add("active");
     }
     this.activeDataWrapper.querySelector(".txt-img-btn").textContent =
       this.txtOrImg;
@@ -103,13 +103,13 @@ class Data {
   hideAllData = () => {
     this.deactivateAllDataWrappers();
     this.activeDataWrapper
-      ?.querySelectorAll(".comp-data-wrap")
+      .querySelectorAll(".comp-data-wrap")
       .forEach(function (el) {
         el.classList.remove("active");
       });
   };
   showData = () => {
-    this.activeDataWrapper?.classList.add("active");
+    this.activeDataWrapper.classList.add("active");
     this.activeDataWrapper.querySelectorAll(".comp-data-wrap").forEach((el) => {
       if (el.dataset.comp === this.activeCtrlBtn.dataset.comp)
         this.activeDataSheet = el;
@@ -133,7 +133,7 @@ class Data {
       .classList.add("active");
   };
   resetAllDataSheets = () => {
-    this.allData?.forEach(function (el) {
+    this.allData.forEach(function (el) {
       el.parentElement.classList.add("active");
       el.querySelector(".comp-data-body-wrap").scroll(0, 0);
       el.parentElement.classList.remove("active");
@@ -197,7 +197,7 @@ class Data {
     activeVidWrap.style.backgroundImage = `url("${asset}")`;
   };
   deactivateAllDataWrappers = () => {
-    this.allDataWrappers?.forEach((el) => {
+    this.allDataWrappers.forEach((el) => {
       el.classList.remove("active");
     });
   };
@@ -205,7 +205,7 @@ class Data {
     //return if clicked view same as current view
     if (clickedViewOptsBtn.dataset.view === this.activeView) return;
     //setting UI and logic...
-    this.viewOptsMenu?.classList.remove("active");
+    this.viewOptsMenu.classList.remove("active");
     this.viewOptsBtn.textContent = clickedViewOptsBtn.textContent;
     this.activeDataWrapper = this.allDataWrappers.find(
       (el) => el.dataset.view === clickedViewOptsBtn.dataset.view,
@@ -231,7 +231,7 @@ class Data {
     this.playDataVid(); //removes blackout in global.playRange
   };
   playDataVid = () => {
-    this.introText?.classList.remove("active");
+    this.introText.classList.remove("active");
     this.activeCtrlBtnWrapper.classList.remove("active");
     this.global.setStartTime(this.startTime);
     this.global.setEndTime(this.endTime);
@@ -243,7 +243,7 @@ class Data {
       this.setDataVidBackgroundImg();
       this.setDataVidPoster(); //done here so poster doesn't appear earlier
       this.showActiveCtrlBtnWrapper();
-      this.introText?.classList.add("active");
+      this.introText.classList.add("active");
       this.global.enableNavLinksAndNavBtn();
     } else if (this.viewChainFlag) {
       this.viewChainFlag = false;
@@ -252,14 +252,14 @@ class Data {
       this.setViewVidStartAndEnd();
       this.playDataVid();
     } else {
-      this.dimmer?.classList.add("active");
+      this.dimmer.classList.add("active");
       this.activeDataWrapper
-        ?.querySelector(".txt-img-btn")
+        .querySelector(".txt-img-btn")
         .classList.add("active");
       this.showData();
       this.showBackBtn();
       //set bckgrnd img to black to prevent flash of image when changing nav
-      const activeVidWrap = this.global.getActiveVid()?.closest(".vid-wrapper");
+      const activeVidWrap = this.global.getActiveVid().closest(".vid-wrapper");
       if (activeVidWrap) {
         activeVidWrap.style.backgroundImage = "none";
         activeVidWrap.style.backgroundColor = "black";
@@ -272,12 +272,12 @@ class Data {
     this.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
     this.txtOrImg = "image";
     this.activeDataWrapper
-      ?.querySelector(".txt-img-btn")
+      .querySelector(".txt-img-btn")
       .classList.remove("active");
     this.hideAllData();
     this.resetAllDataSheets();
-    this.dimmer?.classList.remove("active");
-    this.introText?.classList.add("active");
+    this.dimmer.classList.remove("active");
+    this.introText.classList.add("active");
     this.hideBackBtn();
     this.showCtrlBtnWrapper();
 
@@ -304,7 +304,7 @@ class Data {
     );
   };
   deactivateAllCtrlBtnWrappers = () => {
-    this.allCtrlBtnWrappers?.forEach((el) => {
+    this.allCtrlBtnWrappers.forEach((el) => {
       el.classList.remove("active");
     });
   };

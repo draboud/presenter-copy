@@ -4,31 +4,42 @@ class Sequence {
     this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
-    this.allIntroText = [
-      ...this.container.querySelectorAll(".intro-text-wrap"),
+    this.pauseWrapper = this.global.query(".pause-wrapper", this.container);
+    this.allTxtWrappers = [
+      ...this.global.queryAll(".txt-wrapper", this.container),
+    ];
+    this.allIntroTxt = [
+      ...this.global.queryAll(".intro-txt-wrap", this.container),
     ];
     this.allActionHeadings = [
-      ...this.container.querySelectorAll(".action-heading"),
+      ...this.global.queryAll(".action-heading", this.container),
     ];
-    this.pauseWrapper = this.container.querySelector(".pause-wrapper");
-    this.allVidWrappers = this.container.querySelectorAll(".vid-wrapper");
+    this.allVidWrappers = [
+      ...this.global.queryAll(".vid-wrapper", this.container),
+    ];
+    this.allCtrlBtnWrappers = [
+      ...this.global.queryAll(".section-wrap-btns", this.container),
+    ];
+    this.isDropdown = false;
+    this.activeSequence = null;
+    this.activeSectionTxt = null;
+    this.activeVidWrapper = null;
+    this.activeCtrlBtnWrapper = null;
     this.sequenceTimer = null;
     this.sequenceEndIsCancelled = false;
-    this.sequenceIndex = 0;
-    this.dropdownClicked = false;
     this.eventMap = new Map([
-      ["open-sequence", this.initSection.bind(this)],
-      ["open-sequence-index", this.activateSectionIndex.bind(this)],
-      ["play-ctrl-vid", this.playCtrlBtnVid.bind(this)],
-      ["pause-ctrl-vid", this.pauseCtrlVid.bind(this)],
+      ["open-sequence", this.initSection],
+      ["open-sequence-index", this.setActiveSequenceDropdown],
+      ["play-ctrl-vid", this.playCtrlBtnVid],
+      ["pause-ctrl-vid", this.pauseCtrlVid],
     ]);
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clicked) {
-    if (!this.dropdownClicked) {
+  initSection = (clicked) => {
+    if (!this.isDropdown) {
       this.global.activateCurrentNavLink(clicked);
-      this.sequenceIndex = 0;
+      this.activeSequence = clicked.dataset.sequence;
     } else {
       this.global.activateCurrentNavLink(
         clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
@@ -36,24 +47,20 @@ class Sequence {
       window.dispatchEvent(
         new CustomEvent("dropdownOptClicked", { detail: clicked }),
       );
-      this.dropdownClicked = false;
+      this.isDropdown = false;
     }
     this.global.flashBlackout();
+    this.activeSequence = clicked.dataset.sequence;
     this.pauseWrapper.classList.remove("active");
     this.global.disablePause();
     this.hideAllIntroText();
     this.hideAllActionHeadings();
-    this.allIntroText[this.sequenceIndex].classList.add("active");
-    this.setActiveSequenceVidWrap(this.sequenceIndex);
-  };
-  activateSectionIndex = function (clicked) {
-    this.dropdownClicked = true;
-    this.sequenceIndex = this.global.getLocalIndex(
-      clicked,
-      "nav_menu_link-dropdown",
-      "nav_menu_dropdown",
-    );
-    this.initSection(clicked);
+    this.setAndShowActiveTxtWrapper();
+    this.setAndShowActiveVidWrapper();
+    this.setAndShowActiveCtrlBtnWrapper();
+    this.activeTxtWrapper
+      .querySelector(".intro-txt-wrap")
+      .classList.add("active");
   };
   handleEvent = (trigger, eventAction) => {
     const action = this.eventMap.get(eventAction);
@@ -63,33 +70,52 @@ class Sequence {
       console.warn(`No action found for: ${eventAction}`);
     }
   };
-  setSequenceIndex = function (value) {
-    if (!value) this.sequenceIndex = 0;
-    this.sequenceIndex = value;
+  setActiveSequenceDropdown = (clicked) => {
+    this.isDropdown = true;
+    this.initSection(clicked);
   };
-  hideAllIntroText = function () {
-    this.allIntroText.forEach((el) => {
+  setAndShowActiveTxtWrapper = () => {
+    this.allTxtWrappers.forEach((el) => el.classList.remove("active"));
+    this.activeTxtWrapper = this.allTxtWrappers.find(
+      (el) => el.dataset.sequence === this.activeSequence,
+    );
+    this.activeTxtWrapper.classList.add("active");
+  };
+  setAndShowActiveVidWrapper = () => {
+    this.allVidWrappers.forEach((el) => el.classList.remove("active"));
+    this.activeVidWrapper = this.allVidWrappers.find(
+      (el) => el.dataset.sequence === this.activeSequence,
+    );
+    this.activeVidWrapper.classList.add("active");
+  };
+  setAndShowActiveCtrlBtnWrapper = () => {
+    this.allCtrlBtnWrappers.forEach((el) => el.classList.remove("active"));
+    this.activeCtrlBtnWrapper = this.allCtrlBtnWrappers.find(
+      (el) => el.dataset.sequence === this.activeSequence,
+    );
+    this.activeCtrlBtnWrapper.classList.add("active");
+  };
+  hideAllIntroText = () => {
+    this.allIntroTxt.forEach((el) => {
       el.classList.remove("active");
     });
   };
-  hideAllActionHeadings = function () {
+  hideAllActionHeadings = () => {
     this.allActionHeadings.forEach((el) => {
       el.classList.remove("active");
     });
   };
-  setActiveSequenceVidWrap = function () {
-    this.allVidWrappers.forEach(function (el) {
-      el.classList.remove("active");
-    });
-    this.allVidWrappers[this.sequenceIndex].classList.add("active");
-  };
-  playCtrlBtnVid = function (clickedCtrlBtn) {
+  playCtrlBtnVid = (clickedCtrlBtn) => {
     this.clearSequenceTimers();
     this.global.disablePause();
     this.global.enablePause();
     this.pauseWrapper.classList.remove("active");
-    this.allIntroText[this.sequenceIndex].classList.remove("active");
-    this.allActionHeadings[this.sequenceIndex].classList.add("active");
+    this.activeTxtWrapper
+      .querySelector(".intro-txt-wrap")
+      .classList.remove("active");
+    this.activeTxtWrapper
+      .querySelector(".action-heading")
+      .classList.add("active");
     this.sequenceEndIsCancelled = false;
     this.global.setActiveVid();
     this.global.setStartTime(clickedCtrlBtn.dataset.startTime);
@@ -98,17 +124,17 @@ class Sequence {
     this.global.blackout.classList.remove("off");
     this.global.playRange();
   };
-  pauseCtrlVid = function () {
+  pauseCtrlVid = () => {
     this.global.togglePause();
     this.pauseWrapper.classList.toggle("active");
   };
-  vidEnd = function () {
+  vidEnd = () => {
     if (this.sequenceEndIsCancelled === false) {
       this.pauseWrapper.classList.remove("active");
       this.global.disablePause(this.pauseWrapper);
     }
   };
-  clearSequenceTimers = function () {
+  clearSequenceTimers = () => {
     this.sequenceEndIsCancelled = true;
     clearTimeout(this.sequenceTimer);
     this.sequenceTimer = null;

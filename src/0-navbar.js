@@ -1,16 +1,17 @@
 class Navbar {
-  constructor(container) {
+  constructor(globalController, container) {
+    this.global = globalController;
     this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
-    this.navMenu = this.container.querySelector(".nav_menu");
-    this.navBtn = this.container.querySelector(".nav_button");
-    this.allNavLinks = this.container.querySelectorAll(".nav_menu_link");
+    this.navMenu = this.global.query(".nav_menu", this.container);
+    this.navBtn = this.global.query(".nav_button", this.container);
+    this.allNavLinks = this.global.queryAll(".nav_menu_link", this.container);
     this.allNavLinksWithDropdown = [
-      ...this.container.querySelectorAll('[data-nav-section="sequence"]'),
+      ...this.global.queryAll('[data-nav-section="sequence"]', this.container),
     ];
     this.allNavDropdowns = [
-      ...this.container.querySelectorAll(".nav_menu_dropdown"),
+      ...this.global.queryAll(".nav_menu_dropdown", this.container),
     ];
     this.eventMap = new Map([
       ["open-nav-dropdown", this.openNavDropdown.bind(this)],
@@ -34,7 +35,7 @@ class Navbar {
     });
   };
   closeMobileNavMenu = function () {
-    if ("navMenuOpen" in this.navMenu.dataset) this.navBtn?.click();
+    if ("navMenuOpen" in this.navMenu.dataset) this.navBtn.click();
   };
   openNavDropdown = function (trigger) {
     trigger

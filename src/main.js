@@ -1,4 +1,4 @@
-console.log("BRANCH: newModules-6");
+console.log("BRANCH: newModules-7");
 
 import { TIMING } from "./0-config";
 import * as global from "./0-global";
@@ -17,7 +17,7 @@ const navContainer = document.querySelector(".nav_component");
 const featuresContainer = document.querySelector(".section.features");
 const dataContainer = document.querySelector(".section.data");
 const sequenceContainer = document.querySelector(".section.sequence");
-const navbar = new NavbarClass(navContainer);
+const navbar = new NavbarClass(global, navContainer);
 const features = new FeaturesClass(global, featuresContainer);
 const data = new DataClass(global, dataContainer);
 const sequence = new SequenceClass(global, sequenceContainer);
@@ -128,7 +128,7 @@ const init = function () {
   //.......................................................................
   setTimeout(() => {
     navContainer.classList.add("active");
-    features.initSection(null, null, true);
+    features.initSection(null, (isIntro = true));
   }, TIMING.UI.START_UI_REVEAL);
   //.......................................................................
   //.......................................................................

@@ -20,7 +20,27 @@ export const _state = {
 };
 //.......................................................................
 //GLOBAL FUNCTIONS.......................................................
-export const getVidType = (video) => {
+//The 'Strict' Selector
+export const query = function (selector, context = document) {
+  const el = context.querySelector(selector);
+  if (!el) {
+    throw new Error(
+      `CRITICAL UI ERROR: "${selector}" is missing from the DOM.`,
+    );
+  }
+  return el;
+};
+//The 'Strict' Mult-Selector
+export const queryAll = function (selector, context = document) {
+  const elements = context.querySelectorAll(selector);
+  if (elements.length === 0) {
+    throw new Error(
+      `CRITICAL UI ERROR: No elements matching "${selector}" found.`,
+    );
+  }
+  return elements;
+};
+export const getVidType = function (video) {
   return video.closest(".section").classList[1];
 };
 export const flashBlackout = function () {
@@ -99,6 +119,7 @@ export const resetAllSectionVids = function () {
   });
 };
 export const playRange = function (videoCurrentTime) {
+  if (!_state.activeVid) return;
   const vidCode = _state.activeVid.parentElement;
   const targetStart = videoCurrentTime || _state.startTime;
   // CLEANUP: Kill any previous monitor before starting a new one
