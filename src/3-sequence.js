@@ -4,9 +4,9 @@ class Sequence {
     this.container = container; //The root for this module
     //.......................................................................
     //DEFINITIONS............................................................
-    this.pauseWrapper = this.global.query(".pause-wrapper", this.container);
+    this.pauseWrapper = this.global.query(".pause-wrap", this.container);
     this.allTxtWrappers = [
-      ...this.global.queryAll(".txt-wrapper", this.container),
+      ...this.global.queryAll(".txt-wrap", this.container),
     ];
     this.allIntroTxt = [
       ...this.global.queryAll(".intro-txt-wrap", this.container),
@@ -15,7 +15,7 @@ class Sequence {
       ...this.global.queryAll(".action-heading", this.container),
     ];
     this.allVidWrappers = [
-      ...this.global.queryAll(".vid-wrapper", this.container),
+      ...this.global.queryAll(".vid-wrap", this.container),
     ];
     this.allCtrlBtnWrappers = [
       ...this.global.queryAll(".section-wrap-btns", this.container),
@@ -126,7 +126,7 @@ class Sequence {
     this.global.setStartTime(clickedCtrlBtn.dataset.startTime);
     this.global.setEndTime(clickedCtrlBtn.dataset.endTime);
     this.global.activateCurrentBtn(clickedCtrlBtn);
-    this.global.blackout.classList.remove("off");
+    this.global.blackout.classList.add("active");
     this.global.playRange();
   };
   pauseCtrlVid = () => {

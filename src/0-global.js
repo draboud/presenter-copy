@@ -44,9 +44,9 @@ export const getVidType = function (video) {
   return video.closest(".section").classList[1];
 };
 export const flashBlackout = function () {
-  blackout.classList.remove("off");
+  blackout.classList.add("active");
   setTimeout(function () {
-    blackout.classList.add("off");
+    blackout.classList.remove("active");
   }, TIMING.UI.BLACKOUT_TIMER);
 };
 export const enableNavLinksAndNavBtn = function () {
@@ -129,7 +129,7 @@ export const playRange = function (videoCurrentTime) {
       _state.activeVid._currentMonitor,
     );
   }
-  // 1. HIDDEN STATE: Instant hide to reveal vid-wrapper background image
+  // 1. HIDDEN STATE: Instant hide to reveal vid-wrap background image
   if (vidCode) vidCode.style.opacity = "0";
   // Clear any existing timeupdate monitors
   _state.activeVid.removeEventListener(
@@ -167,7 +167,7 @@ export const playRange = function (videoCurrentTime) {
             requestAnimationFrame(() => {
               if (vidCode) vidCode.style.opacity = "1";
               if (typeof blackout !== "undefined")
-                blackout.classList.add("off");
+                blackout.classList.remove("active");
             });
           });
         } else if (!_state.activeVid.paused) {
@@ -196,11 +196,11 @@ export const playRange = function (videoCurrentTime) {
 };
 export const disablePause = function () {
   _state.pauseFlag = false;
-  _state.activeSection.querySelector(".pause-wrapper").style.pointerEvents =
+  _state.activeSection.querySelector(".pause-wrap").style.pointerEvents =
     "none";
 };
 export const enablePause = function () {
-  _state.activeSection.querySelector(".pause-wrapper").style.pointerEvents =
+  _state.activeSection.querySelector(".pause-wrap").style.pointerEvents =
     "auto";
 };
 export const togglePause = function () {

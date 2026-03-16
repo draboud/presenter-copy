@@ -8,17 +8,17 @@ class Features {
     //DEFINITIONS............................................................
     this.featuresBlackout = this.global.query(".blackout", this.container);
     this.featuresAllText = [
-      ...this.global.queryAll(".txt-wrapper", this.container),
+      ...this.global.queryAll(".txt-wrap", this.container),
     ];
     this.featuresIntroVidDiv = this.global.query(
-      ".vid-wrapper.intro",
+      ".vid-wrap.intro",
       this.container,
     );
     this.featuresVidDiv = this.global.query(
-      ".vid-wrapper.features",
+      ".vid-wrap.features",
       this.container,
     );
-    this.pauseWrapper = this.global.query(".pause-wrapper", this.container);
+    this.pauseWrapper = this.global.query(".pause-wrap", this.container);
     this.featuresCtrlBtns = this.global.query(
       ".section-wrap-btns",
       this.container,
@@ -36,8 +36,8 @@ class Features {
   //.......................................................................
   //FUNCTIONS..............................................................
   initSection = (clicked, isIntro) => {
-    this.global.blackout.classList.add("off");
-    this.featuresBlackout.classList.add("off");
+    this.global.blackout.classList.remove("active");
+    this.featuresBlackout.classList.remove("active");
     this.pauseWrapper.classList.remove("active");
     this.global.disablePause();
     if (clicked) {
@@ -87,7 +87,7 @@ class Features {
     this.featuresVidDiv.classList.remove("active");
   };
   playFeaturesIntro = () => {
-    this.featuresBlackout.classList.add("off");
+    this.featuresBlackout.classList.remove("active");
     this.showFeaturesIntroVidDiv();
     this.hideFeaturesVidDiv();
     // Logic: Find the one that isn't hidden (display: none)
@@ -119,7 +119,7 @@ class Features {
     this.global.setStartTime(clickedCtrlBtn.dataset.startTime);
     this.global.setEndTime(clickedCtrlBtn.dataset.endTime);
     this.global.activateCurrentBtn(clickedCtrlBtn);
-    this.global.blackout.classList.remove("off");
+    this.global.blackout.classList.add("active");
     this.global.playRange();
   };
   pauseCtrlVid = () => {
@@ -132,7 +132,7 @@ class Features {
       this.global.disablePause();
       this.pauseWrapper.classList.remove("active");
       this.featuresTimer = setTimeout(() => {
-        this.featuresBlackout.classList.remove("off");
+        this.featuresBlackout.classList.add("active");
         setTimeout(() => {
           this.hideAllText();
           this.showIntroText();

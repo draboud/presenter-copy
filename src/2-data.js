@@ -7,10 +7,10 @@ class Data {
     //.......................................................................
     //DEFINITIONS............................................................
     this.introText = this.global.query(".section-wrap-txt", this.container);
-    this.viewOptsBtn = this.global.query(".opts-menu_btn", this.container);
+    this.viewOptsBtn = this.global.query(".opts-menu-btn", this.container);
     this.viewOptsMenu = this.global.query(".opts-dropdown", this.container);
     this.allViewOptBtns = [
-      ...this.global.queryAll(".opts-menu_link", this.container),
+      ...this.global.queryAll(".opts-menu-link", this.container),
     ];
     this.dimmer = this.global.query(".dimmer", this.container);
     this.txtImgBtn = this.global.query(".txt-img-btn", this.container);
@@ -190,7 +190,7 @@ class Data {
   setDataVidBackgroundImg = () => {
     const activeVid = this.global.getActiveVid();
     if (!activeVid) return;
-    const activeVidWrap = activeVid.closest(".vid-wrapper");
+    const activeVidWrap = activeVid.closest(".vid-wrap");
     let mapKey = this.lastActiveView.view;
     if (activeVid.parentElement.classList.contains("mp")) mapKey += "-mp";
     const asset = this.assetsMap.get(mapKey);
@@ -259,7 +259,7 @@ class Data {
       this.showData();
       this.showBackBtn();
       //set bckgrnd img to black to prevent flash of image when changing nav
-      const activeVidWrap = this.global.getActiveVid().closest(".vid-wrapper");
+      const activeVidWrap = this.global.getActiveVid().closest(".vid-wrap");
       if (activeVidWrap) {
         activeVidWrap.style.backgroundImage = "none";
         activeVidWrap.style.backgroundColor = "black";

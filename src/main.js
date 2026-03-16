@@ -1,4 +1,4 @@
-console.log("BRANCH: newModules-9");
+console.log("BRANCH: newModules-10");
 
 import { TIMING } from "./0-config";
 import * as global from "./0-global";
@@ -42,7 +42,7 @@ navContainer.addEventListener("click", function (e) {
     return;
   }
   //dont flash if only clicking dropdown
-  global.blackout.classList.remove("off");
+  global.blackout.classList.add("active");
   //2. State update
   global.setActiveSection(activeSection);
   //3. Polymorphic call
@@ -127,14 +127,14 @@ global.allVids.forEach(function (el) {
 const init = function () {
   setupLazyLoading();
   global.setWebflowBreakpoint();
-  global.blackout.classList.remove("off");
+  global.blackout.classList.add("active");
   navContainer.classList.remove("active");
   navbar.allNavDropdowns.forEach(function (el) {
     el.classList.remove("active");
   });
   global.setActiveSection("features");
   global.setActiveVid();
-  global.blackout.classList.add("off");
+  global.blackout.classList.remove("active");
   features.playFeaturesIntro();
   //.......................................................................
   //.......................................................................
