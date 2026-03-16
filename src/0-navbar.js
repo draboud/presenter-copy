@@ -34,15 +34,7 @@ class Navbar {
     });
   };
   closeMobileNavMenu = function () {
-    if (window.getComputedStyle(this.navBtn).display !== "none")
-      this.navBtn.click();
-  };
-  disableNavLinksAndNavBtn = function () {
-    this.navMenu.style.pointerEvents = "none";
-    if (window.getComputedStyle(this.navMenu).display !== "none") {
-      this.closeMobileNavMenu();
-    }
-    this.navBtn.style.pointerEvents = "none";
+    if ("navMenuOpen" in this.navMenu.dataset) this.navBtn?.click();
   };
   openNavDropdown = function (trigger) {
     trigger

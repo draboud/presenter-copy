@@ -59,10 +59,6 @@ navContainer.addEventListener("mouseout", function (e) {
   const action = hovered.dataset.mouseoutAction;
   navbar.handleEvent(hovered, action);
 });
-//Custom event: features vid end
-window.addEventListener("featuresVidEnded", function (e) {
-  navbar.disableNavLinksAndNavBtn();
-});
 //Custom event: sequence dropdown opt clicked
 window.addEventListener("dropdownOptClicked", function (e) {
   const clicked = e.detail;
@@ -118,6 +114,7 @@ global.allVids.forEach(function (el) {
 //init
 const init = function () {
   setupLazyLoading();
+  global.setWebflowBreakpoint();
   global.blackout.classList.remove("off");
   navContainer.classList.remove("active");
   navbar.allNavDropdowns.forEach(function (el) {

@@ -13,6 +13,7 @@ export const _state = {
   activeSection: null,
   activeSectionName: null,
   activeVid: null,
+  webflowBreakpoint: null,
   startTime: 0,
   endTime: 0,
   pauseFlag: false,
@@ -62,19 +63,29 @@ export const deactivateAllSections = function () {
 export const getActiveVid = function () {
   return _state.activeVid;
 };
-export function setActiveVid() {
+export const setActiveVid = function () {
   allVidCodes.forEach((el) => {
     if (el.offsetParent !== null) {
       _state.activeVid = el.querySelector(".vid");
     }
   });
-}
-export function setStartTime(newValue) {
+};
+export const getWebflowBreakpoint = function () {
+  return _state.webflowBreakpoint;
+};
+export const setWebflowBreakpoint = function () {
+  const width = window.innerWidth;
+  if (width < 480) _state.webflowBreakpoint = "mobilePortrait";
+  if (width >= 480) _state.webflowBreakpoint = "mobileLandscape";
+  if (width >= 768) _state.webflowBreakpoint = "tablet";
+  if (width >= 992) _state.webflowBreakpoint = "desktop";
+};
+export const setStartTime = function (newValue) {
   _state.startTime = newValue;
-}
-export function setEndTime(newValue) {
+};
+export const setEndTime = function (newValue) {
   _state.endTime = newValue;
-}
+};
 export const clearSectionVidSrc = function () {
   _state.activeSection.querySelectorAll(".vid").forEach(function (el) {
     el.src = "";
@@ -204,6 +215,10 @@ export const deactivateAllCtrlBtnWrappers = function () {
     .forEach(function (el) {
       el.classList.remove("active");
     });
+};
+export const toggleBtnHoverClass = function (btn) {
+  if (_state.activeVid && _state.webflowBreakpoint === "desktop")
+    btn.classList.toggle("hovered");
 };
 export const activateCurrentBtn = function (btn) {
   deactivateCurrentBtns();

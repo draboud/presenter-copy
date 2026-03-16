@@ -1,5 +1,5 @@
 import { ASSETS, VIEW_START_END } from "./0-config";
-
+const HOME_VIEW = "view-1";
 class Data {
   constructor(globalController, container) {
     this.global = globalController;
@@ -7,25 +7,19 @@ class Data {
     //.......................................................................
     //DEFINITIONS............................................................
     this.introText = this.container.querySelector(".section-wrap-txt");
-
-    this.viewVidDiv = this.container.querySelector(".vid-wrapper.view");
-    this.allViewVidDivs = this.container.querySelectorAll(".vid-code-view");
-    this.compVidDiv = this.container.querySelector(".vid-wrapper.comp");
-    this.allDataVidDivs = this.container.querySelectorAll(".vid-code");
     this.startTime;
     this.endTime;
     this.viewVidFlag;
-
     this.viewOptsBtn = this.container.querySelector(".opts-menu_btn");
     this.viewOptsMenu = this.container.querySelector(".opts-dropdown");
     this.allViewOptBtns = [
       ...this.container.querySelectorAll(".opts-menu_link"),
     ];
-    this.activeViewBtnIndex = null;
-    this.activeView = "view-a";
-    this.lastActiveView = { view: "view-a", startTime: 0, endTime: 0 };
+    // this.activeViewBtnIndex = null;
+    this.activeViewBtn = null;
+    this.activeView = "view-1";
+    this.lastActiveView = { view: "view-1", startTime: 0, endTime: 0 };
     this.viewChainFlag = false;
-
     this.dimmer = this.container.querySelector(".dimmer");
     this.txtImgBtn = this.container.querySelector(".txt-img-btn");
     this.txtOrImg = "image";
@@ -37,35 +31,41 @@ class Data {
     ];
     this.allData = [...this.container.querySelectorAll(".comp-data-wrap")];
     this.activeDataSheet = null;
-
-    this.ctrlBtnWrapper = this.container.querySelector(".section-wrap-btns");
     this.allCtrlBtnWrappers = [
       ...this.container.querySelectorAll(".section-wrap-btns"),
     ];
     this.activeCtrlBtnWrapper = this.allCtrlBtnWrappers[0];
-    this.ctrlBtnIndex = null;
+    this.activeCtrlBtn = null;
     this.eventMap = new Map([
-      ["open-data", this.initSection.bind(this)],
-      ["play-ctrl-vid", this.setAndPlayCtrlBtnVid.bind(this)],
-      ["play-view-vid", this.setAndPlayViewVid.bind(this)],
-      ["back-to-view", this.backToViewFromComp.bind(this)],
-      ["open-view-opts-menu", this.showViewOptsMenu.bind(this)],
-      ["close-view-opts-menu", this.hideViewOptsMenu.bind(this)],
-      ["toggle-img-txt", this.showCompImageOrText.bind(this)],
+      ["open-data", this.initSection],
+      ["play-ctrl-vid", this.setAndPlayCtrlBtnVid],
+      ["play-view-vid", this.setAndPlayViewVid],
+      ["back-to-view", this.backToViewFromComp],
+      ["open-view-opts-menu", this.showViewOptsMenu],
+      ["close-view-opts-menu", this.hideViewOptsMenu],
+      ["toggle-img-txt", this.showCompImageOrText],
+    ]);
+    this.assetsMap = new Map([
+      ["view-1", ASSETS["view-1"].desktop],
+      ["view-1-mp", ASSETS["view-1"].mobile],
+      ["view-2", ASSETS["view-2"].desktop],
+      ["view-2-mp", ASSETS["view-2"].mobile],
+      ["view-3", ASSETS["view-3"].desktop],
+      ["view-3-mp", ASSETS["view-3"].mobile],
     ]);
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clicked) {
+  initSection = (clicked) => {
     this.global.flashBlackout();
     //setting UI and logic...
-    this.dimmer.classList.remove("active");
+    this.dimmer?.classList.remove("active");
     this.txtOrImg = "image";
     this.txtImgBtn.textContent = "image";
     this.hideBackBtn();
     this.hideAllData();
     this.resetAllDataSheets();
-    this.introText.classList.add("active");
+    this.introText?.classList.add("active");
     this.showCtrlBtnWrapper();
     this.global.activateCurrentNavLink(clicked);
     //setting vid element...
@@ -81,54 +81,47 @@ class Data {
       console.warn(`No action found for: ${eventAction}`);
     }
   };
-  showViewOptsMenu = function () {
-    this.viewOptsMenu.classList.add("active");
+  showViewOptsMenu = () => {
+    this.viewOptsMenu?.classList.add("active");
   };
-  hideViewOptsMenu = function () {
-    this.viewOptsMenu.classList.remove("active");
+  hideViewOptsMenu = () => {
+    this.viewOptsMenu?.classList.remove("active");
   };
-  showCompImageOrText = function () {
+  showCompImageOrText = () => {
     if (this.txtOrImg === "image") {
       this.txtOrImg = "text";
-      this.dimmer.classList.remove("active");
-      this.activeDataSheet.classList.remove("active");
+      this.dimmer?.classList.remove("active");
+      this.activeDataSheet?.classList.remove("active");
     } else {
       this.txtOrImg = "image";
-      this.dimmer.classList.add("active");
-      this.activeDataSheet.classList.add("active");
+      this.dimmer?.classList.add("active");
+      this.activeDataSheet?.classList.add("active");
     }
     this.activeDataWrapper.querySelector(".txt-img-btn").textContent =
       this.txtOrImg;
   };
-  setActiveViewBtnIndex = function () {
-    this.allViewOptBtns.forEach((el, index) => {
-      if (el.classList.contains("active")) {
-        this.activeViewBtnIndex = index;
-        el.classList.remove("active");
-      }
-    });
-  };
-  hideAllData = function () {
+  hideAllData = () => {
     this.deactivateAllDataWrappers();
     this.activeDataWrapper
-      .querySelectorAll(".comp-data-wrap")
+      ?.querySelectorAll(".comp-data-wrap")
       .forEach(function (el) {
         el.classList.remove("active");
       });
   };
-  showData = function () {
-    this.activeDataWrapper.classList.add("active");
-    this.activeDataSheet = Array.from(
-      this.activeDataWrapper.querySelectorAll(".comp-data-wrap"),
-    )[this.ctrlBtnIndex];
+  showData = () => {
+    this.activeDataWrapper?.classList.add("active");
+    this.activeDataWrapper.querySelectorAll(".comp-data-wrap").forEach((el) => {
+      if (el.dataset.comp === this.activeCtrlBtn.dataset.comp)
+        this.activeDataSheet = el;
+    });
     this.activeDataSheet.classList.add("active");
   };
-  hideBackBtn = function () {
+  hideBackBtn = () => {
     this.activeCtrlBtnWrapper
       .querySelector(".ctrl-btn-back")
       .classList.remove("active");
   };
-  showBackBtn = function () {
+  showBackBtn = () => {
     this.activeCtrlBtnWrapper
       .querySelectorAll(".ctrl-btn")
       .forEach(function (el) {
@@ -139,205 +132,152 @@ class Data {
       .querySelector(".ctrl-btn-back")
       .classList.add("active");
   };
-  resetAllDataSheets = function () {
-    this.allData.forEach(function (el) {
+  resetAllDataSheets = () => {
+    this.allData?.forEach(function (el) {
       el.parentElement.classList.add("active");
       el.querySelector(".comp-data-body-wrap").scroll(0, 0);
       el.parentElement.classList.remove("active");
     });
   };
-  setLastActiveView = function (newValue) {
+  setLastActiveView = (newValue) => {
     if (!newValue) {
       this.lastActiveView.view = this.activeView;
     } else {
       this.lastActiveView.view = newValue;
     }
   };
-  setActiveView = function (textContent) {
-    this.activeView = textContent;
+  setActiveView = () => {
+    this.activeView = this.activeViewBtn.dataset.view;
   };
-  viewBackToStart = function () {
+  viewBackToStart = () => {
     this.startTime = VIEW_START_END[this.lastActiveView.view].startTime;
     this.endTime = VIEW_START_END[this.lastActiveView.view].endTime;
   };
-  setViewVidStartAndEnd = function () {
+  setViewVidStartAndEnd = () => {
     this.viewVidFlag = true;
-    if (this.lastActiveView.view !== "view-a" && this.activeView === "view-a") {
+    if (
+      this.lastActiveView.view !== HOME_VIEW &&
+      this.activeView === HOME_VIEW
+    ) {
       this.viewBackToStart();
       return;
     }
-    if (this.lastActiveView.view !== "view-a" && this.activeView !== "view-a") {
+    if (
+      this.lastActiveView.view !== HOME_VIEW &&
+      this.activeView !== HOME_VIEW
+    ) {
       this.viewChainFlag = true;
       this.viewBackToStart();
-      this.allViewOptBtns.forEach((el) => {
-        if (el.textContent === this.activeView) {
-          el.classList.add("active");
-        }
-        this.setActiveViewBtnIndex(el);
-      });
       return;
     }
-    this.startTime =
-      this.allViewOptBtns[this.activeViewBtnIndex].dataset.startTime;
-    this.endTime = this.allViewOptBtns[this.activeViewBtnIndex].dataset.endTime;
+    this.startTime = this.activeViewBtn.dataset.startTime;
+    this.endTime = this.activeViewBtn.dataset.endTime;
   };
-  setDataVidStartAndEnd = function (clicked) {
+  setDataVidStartAndEnd = () => {
     this.viewVidFlag = false;
     this.hideAllData();
-    this.startTime = clicked.dataset.startTime;
-    this.endTime = clicked.dataset.endTime;
+    this.startTime = this.activeCtrlBtn.dataset.startTime;
+    this.endTime = this.activeCtrlBtn.dataset.endTime;
   };
-  setDataVidPoster = function (newValue) {
-    if (!newValue) newValue = this.activeView;
+  setDataVidPoster = () => {
     const activeVid = this.global.getActiveVid();
-    if (!activeVid || activeVid.closest(".section").classList[1] !== "data")
-      return;
-    if (activeVid.parentElement.classList.contains("mp")) {
-      if (newValue === "view-a") {
-        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1_MP);
-        activeVid.setAttribute("poster", ASSETS["view-a"].mobile);
-      }
-      if (newValue === "view-b") {
-        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2_MP);
-        activeVid.setAttribute("poster", ASSETS["view-b"].mobile);
-      }
-      if (newValue === "view-c") {
-        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3_MP);
-        activeVid.setAttribute("poster", ASSETS["view-c"].mobile);
-      }
-    } else {
-      if (newValue === "view-a") {
-        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_1);
-        activeVid.setAttribute("poster", ASSETS["view-a"].desktop);
-      }
-      if (newValue === "view-b") {
-        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_2);
-        activeVid.setAttribute("poster", ASSETS["view-b"].desktop);
-      }
-      if (newValue === "view-c") {
-        // activeVid.setAttribute("poster", IMAGES.DATA_VIEW_3);
-        activeVid.setAttribute("poster", ASSETS["view-c"].desktop);
-      }
-    }
+    if (!activeVid) return;
+    let mapKey = this.activeView;
+    if (activeVid.parentElement.classList.contains("mp")) mapKey += "-mp";
+    const asset = this.assetsMap.get(mapKey);
+    activeVid.setAttribute("poster", asset);
   };
-  setDataVidBackgroundImg = function () {
+  setDataVidBackgroundImg = () => {
     const activeVid = this.global.getActiveVid();
+    if (!activeVid) return;
     const activeVidWrap = activeVid.closest(".vid-wrapper");
-    if (activeVid.parentElement.classList.contains("mp")) {
-      if (this.lastActiveView.view === "view-a") {
-        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1_MP}")`;
-        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-a"].mobile}")`;
-      }
-      if (this.lastActiveView.view === "view-b") {
-        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2_MP}")`;
-        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-b"].mobile}")`;
-      }
-      if (this.lastActiveView.view === "view-c") {
-        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3_MP}")`;
-        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-c"].mobile}")`;
-      }
-    } else {
-      if (this.lastActiveView.view === "view-a") {
-        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_1}")`;
-        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-a"].desktop}")`;
-      }
-      if (this.lastActiveView.view === "view-b") {
-        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_2}")`;
-        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-b"].desktop}")`;
-      }
-      if (this.lastActiveView.view === "view-c") {
-        // activeVidWrap.style.backgroundImage = `url("${IMAGES.DATA_VIEW_3}")`;
-        activeVidWrap.style.backgroundImage = `url("${ASSETS["view-c"].desktop}")`;
-      }
-    }
+    let mapKey = this.lastActiveView.view;
+    if (activeVid.parentElement.classList.contains("mp")) mapKey += "-mp";
+    const asset = this.assetsMap.get(mapKey);
+    activeVidWrap.style.backgroundImage = `url("${asset}")`;
   };
-  deactivateAllDataWrappers = function () {
-    this.allDataWrappers.forEach(function (el) {
+  deactivateAllDataWrappers = () => {
+    this.allDataWrappers?.forEach((el) => {
       el.classList.remove("active");
     });
   };
-  setAndPlayViewVid = function (clickedViewOptsBtn) {
+  setAndPlayViewVid = (clickedViewOptsBtn) => {
+    //return if clicked view same as current view
+    if (clickedViewOptsBtn.dataset.view === this.activeView) return;
     //setting UI and logic...
-    clickedViewOptsBtn.classList.add("active"); //for Data.setActiveViewBtnIndex
-    this.setActiveViewBtnIndex();
-    this.viewOptsMenu.classList.remove("active");
+    this.viewOptsMenu?.classList.remove("active");
     this.viewOptsBtn.textContent = clickedViewOptsBtn.textContent;
-    this.activeDataWrapper = this.allDataWrappers[this.activeViewBtnIndex];
-    this.setActiveCtrlBtnWrapper();
-
+    this.activeDataWrapper = this.allDataWrappers.find(
+      (el) => el.dataset.view === clickedViewOptsBtn.dataset.view,
+    );
+    this.activeViewBtn = clickedViewOptsBtn;
     //setting vid element...
     this.global.setActiveVid();
     this.setDataVidBackgroundImg();
-    this.setActiveView(clickedViewOptsBtn.textContent); //for the poster
-
+    this.setActiveView(); //for the poster
+    this.setActiveCtrlBtnWrapper();
     //play vid
     this.setViewVidStartAndEnd();
     this.playDataVid();
   };
-  setAndPlayCtrlBtnVid = function (clickedCtrlBtn) {
+  setAndPlayCtrlBtnVid = (clickedCtrlBtn) => {
     this.global.setActiveVid();
-
     this.setLastActiveView(); //for the bckgrnd img to change to comp vid starts
     this.setDataVidBackgroundImg();
     this.hideActiveCtrlBtnWrapper();
-    this.ctrlBtnIndex = this.global.getLocalIndex(
-      clickedCtrlBtn,
-      "ctrl-btn",
-      "section-wrap-btns",
-    );
-
+    this.activeCtrlBtn = clickedCtrlBtn;
     //play
-    this.setDataVidStartAndEnd(clickedCtrlBtn);
+    this.setDataVidStartAndEnd(this.activeCtrlBtn);
     this.playDataVid(); //removes blackout in global.playRange
   };
-  playDataVid = function () {
-    this.introText.classList.remove("active");
+  playDataVid = () => {
+    this.introText?.classList.remove("active");
     this.activeCtrlBtnWrapper.classList.remove("active");
     this.global.setStartTime(this.startTime);
     this.global.setEndTime(this.endTime);
     this.global.playRange();
   };
-  vidEnd = function () {
+  vidEnd = () => {
     if (this.viewVidFlag && !this.viewChainFlag) {
       this.setLastActiveView();
       this.setDataVidBackgroundImg();
       this.setDataVidPoster(); //done here so poster doesn't appear earlier
       this.showActiveCtrlBtnWrapper();
-      this.introText.classList.add("active");
+      this.introText?.classList.add("active");
       this.global.enableNavLinksAndNavBtn();
     } else if (this.viewChainFlag) {
       this.viewChainFlag = false;
-      this.setLastActiveView("view-a");
+      this.setLastActiveView(HOME_VIEW);
       this.setDataVidBackgroundImg();
       this.setViewVidStartAndEnd();
       this.playDataVid();
     } else {
-      this.dimmer.classList.add("active");
+      this.dimmer?.classList.add("active");
       this.activeDataWrapper
-        .querySelector(".txt-img-btn")
+        ?.querySelector(".txt-img-btn")
         .classList.add("active");
-      this.showData(this.ctrlBtnIndex);
+      this.showData();
       this.showBackBtn();
-
       //set bckgrnd img to black to prevent flash of image when changing nav
-      this.global.getActiveVid().closest(".vid-wrapper").style.backgroundImage =
-        "none";
-      this.global.getActiveVid().closest(".vid-wrapper").style.backgroundColor =
-        "black";
+      const activeVidWrap = this.global.getActiveVid()?.closest(".vid-wrapper");
+      if (activeVidWrap) {
+        activeVidWrap.style.backgroundImage = "none";
+        activeVidWrap.style.backgroundColor = "black";
+      }
     }
   };
-  backToViewFromComp = function () {
+  backToViewFromComp = () => {
     this.global.flashBlackout();
     //setting UI and logic...
     this.activeDataWrapper.querySelector(".txt-img-btn").textContent = "image";
     this.txtOrImg = "image";
     this.activeDataWrapper
-      .querySelector(".txt-img-btn")
+      ?.querySelector(".txt-img-btn")
       .classList.remove("active");
     this.hideAllData();
     this.resetAllDataSheets();
-    this.dimmer.classList.remove("active");
-    this.introText.classList.add("active");
+    this.dimmer?.classList.remove("active");
+    this.introText?.classList.add("active");
     this.hideBackBtn();
     this.showCtrlBtnWrapper();
 
@@ -345,27 +285,26 @@ class Data {
     this.setDataVidBackgroundImg();
     this.global.clearSectionVidSrc(); //reveal poster
   };
-  hideActiveCtrlBtnWrapper = function () {
+  hideActiveCtrlBtnWrapper = () => {
     this.activeCtrlBtnWrapper.classList.remove("active");
   };
-  showActiveCtrlBtnWrapper = function () {
+  showActiveCtrlBtnWrapper = () => {
     this.activeCtrlBtnWrapper.classList.add("active");
   };
-  showCtrlBtnWrapper = function () {
-    this.activeCtrlBtnWrapper
-      .querySelectorAll(".ctrl-btn")
-      .forEach(function (el) {
-        el.classList.add("active");
-      });
+  showCtrlBtnWrapper = () => {
+    this.activeCtrlBtnWrapper.querySelectorAll(".ctrl-btn").forEach((el) => {
+      el.classList.add("active");
+    });
     this.activeCtrlBtnWrapper.classList.add("active");
   };
-  setActiveCtrlBtnWrapper = function () {
+  setActiveCtrlBtnWrapper = () => {
     this.global.deactivateAllCtrlBtnWrappers();
-    this.activeCtrlBtnWrapper =
-      this.allCtrlBtnWrappers[this.activeViewBtnIndex];
+    this.activeCtrlBtnWrapper = this.allCtrlBtnWrappers.find(
+      (el) => el.dataset.view === this.activeView,
+    );
   };
-  deactivateAllCtrlBtnWrappers = function () {
-    this.allCtrlBtnWrappers.forEach(function (el) {
+  deactivateAllCtrlBtnWrappers = () => {
+    this.allCtrlBtnWrappers?.forEach((el) => {
       el.classList.remove("active");
     });
   };

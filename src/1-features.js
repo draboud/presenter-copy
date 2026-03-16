@@ -15,21 +15,22 @@ class Features {
     this.featuresVidDiv = this.container.querySelector(".vid-wrapper.features");
     this.pauseWrapper = this.container.querySelector(".pause-wrapper");
     this.featuresCtrlBtns = this.container.querySelector(".section-wrap-btns");
-    this.btnIndex = 0;
+    this.activeFeature = null;
     this.featuresTimer = null;
     this.featuresEndisCancelled = false;
     this.eventMap = new Map([
-      ["open-features", this.initSection.bind(this)],
-      ["play-ctrl-vid", this.playCtrlBtnVid.bind(this)],
-      ["pause-ctrl-vid", this.pauseCtrlVid.bind(this)],
+      ["btn-hovered", this.global.toggleBtnHoverClass.bind(this)],
+      ["open-features", this.initSection],
+      ["play-ctrl-vid", this.playCtrlBtnVid],
+      ["pause-ctrl-vid", this.pauseCtrlVid],
     ]);
   }
   //.......................................................................
   //FUNCTIONS..............................................................
-  initSection = function (clicked, index, introFlag) {
+  initSection = (clicked, index, introFlag) => {
     this.global.blackout.classList.add("off");
-    this.featuresBlackout.classList.add("off");
-    this.pauseWrapper.classList.remove("active");
+    this.featuresBlackout?.classList.add("off");
+    this.pauseWrapper?.classList.remove("active");
     this.global.disablePause();
     if (clicked) {
       this.global.activateCurrentNavLink(clicked);
@@ -50,38 +51,40 @@ class Features {
       console.warn(`No action found for: ${eventAction}`);
     }
   };
-  hideAllText = function () {
+  hideAllText = () => {
     this.featuresAllText.forEach(function (el) {
       el.classList.remove("active");
     });
   };
-  showIntroText = function () {
+  showIntroText = () => {
     this.featuresAllText
       .find((el) => el.dataset.textContent === "intro")
-      .classList.add("active");
+      ?.classList.add("active");
   };
-  showFeatureText = function () {
-    this.featuresAllText[this.btnIndex + 1].classList.add("active");
+  showFeatureText = () => {
+    this.featuresAllText
+      .find((el) => el.dataset.textContent === this.activeFeature)
+      ?.classList.add("active");
   };
-  showFeaturesIntroVidDiv = function () {
-    this.featuresIntroVidDiv.classList.add("active");
+  showFeaturesIntroVidDiv = () => {
+    this.featuresIntroVidDiv?.classList.add("active");
   };
-  hideFeaturesIntroVidDiv = function () {
-    this.featuresIntroVidDiv.classList.remove("active");
+  hideFeaturesIntroVidDiv = () => {
+    this.featuresIntroVidDiv?.classList.remove("active");
   };
-  showFeaturesVidDiv = function () {
+  showFeaturesVidDiv = () => {
     this.featuresVidDiv.classList.add("active");
   };
-  hideFeaturesVidDiv = function () {
+  hideFeaturesVidDiv = () => {
     this.featuresVidDiv.classList.remove("active");
   };
-  playFeaturesIntro = function () {
-    this.featuresBlackout.classList.add("off");
+  playFeaturesIntro = () => {
+    this.featuresBlackout?.classList.add("off");
     this.showFeaturesIntroVidDiv();
     this.hideFeaturesVidDiv();
     // Logic: Find the one that isn't hidden (display: none)
     const allIntros =
-      this.featuresIntroVidDiv.querySelectorAll(".vid-code-intro");
+      this.featuresIntroVidDiv?.querySelectorAll(".vid-code-intro");
     allIntros.forEach((el) => {
       // offsetParent is null if the element is display: none
       if (el.offsetParent !== null) {
@@ -93,18 +96,14 @@ class Features {
       }
     });
   };
-  playCtrlBtnVid = function (clickedCtrlBtn) {
+  playCtrlBtnVid = (clickedCtrlBtn) => {
     this.clearFeaturesTimers();
     this.global.disablePause();
     this.global.enablePause();
-    this.pauseWrapper.classList.remove("active");
+    this.pauseWrapper?.classList.remove("active");
     this.hideFeaturesIntroVidDiv();
     this.showFeaturesVidDiv();
-    this.btnIndex = this.global.getLocalIndex(
-      clickedCtrlBtn,
-      "ctrl-btn",
-      "section-wrap-btns",
-    );
+    this.activeFeature = clickedCtrlBtn.dataset.feature;
     this.featuresEndisCancelled = false;
     this.hideAllText();
     this.showFeatureText();
@@ -115,17 +114,17 @@ class Features {
     this.global.blackout.classList.remove("off");
     this.global.playRange();
   };
-  pauseCtrlVid = function () {
+  pauseCtrlVid = () => {
     this.global.togglePause();
-    this.pauseWrapper.classList.toggle("active");
+    this.pauseWrapper?.classList.toggle("active");
   };
-  vidEnd = function () {
+  vidEnd = () => {
     if (this.featuresEndisCancelled === false) {
       this.global.disableSectionCtrlBtnEvents();
       this.global.disablePause();
-      this.pauseWrapper.classList.remove("active");
+      this.pauseWrapper?.classList.remove("active");
       this.featuresTimer = setTimeout(() => {
-        this.featuresBlackout.classList.remove("off");
+        this.featuresBlackout?.classList.remove("off");
         setTimeout(() => {
           this.hideAllText();
           this.showIntroText();
@@ -136,15 +135,9 @@ class Features {
           this.playFeaturesIntro();
         }, TIMING.UI.BLACKOUT_WAIT_TO_REVEAL);
       }, TIMING.VIDEO.VID_END_TIMER);
-      window.dispatchEvent(new CustomEvent("featuresVidEnded"));
     }
   };
-  deactivateCurrentBtns = function () {
-    this.featuresCtrlBtns.forEach(function (el) {
-      el.classList.remove("current");
-    });
-  };
-  clearFeaturesTimers = function () {
+  clearFeaturesTimers = () => {
     this.featuresEndisCancelled = true;
     clearTimeout(this.featuresTimer);
     this.featuresTimer = null;
