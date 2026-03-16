@@ -14,9 +14,9 @@ class Navbar {
       ...this.global.queryAll(".nav_menu_dropdown", this.container),
     ];
     this.eventMap = new Map([
-      ["open-nav-dropdown", this.openNavDropdown.bind(this)],
-      ["close-nav-dropdown", this.closeNavDropdown.bind(this)],
-      ["toggle-nav-dropdown", this.toggleNavDropdown.bind(this)],
+      ["open-nav-dropdown", this.openNavDropdown],
+      ["close-nav-dropdown", this.closeNavDropdown],
+      ["toggle-nav-dropdown", this.toggleNavDropdown],
     ]);
   }
   //.......................................................................
@@ -36,6 +36,7 @@ class Navbar {
   };
   closeMobileNavMenu = function () {
     if ("navMenuOpen" in this.navMenu.dataset) this.navBtn.click();
+    this.navMenu.querySelector(".nav_menu_dropdown").classList.remove("active");
   };
   openNavDropdown = function (trigger) {
     trigger
@@ -50,6 +51,7 @@ class Navbar {
       .classList.remove("active");
   };
   toggleNavDropdown = function (trigger) {
+    this.global.activateCurrentNavLink(trigger);
     trigger
       .closest(".nav_menu_link-wrap")
       .querySelector(".nav_menu_dropdown")

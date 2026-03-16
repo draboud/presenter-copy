@@ -37,18 +37,6 @@ class Sequence {
   //.......................................................................
   //FUNCTIONS..............................................................
   initSection = (clicked) => {
-    if (!this.isDropdown) {
-      this.global.activateCurrentNavLink(clicked);
-      this.activeSequence = clicked.dataset.sequence;
-    } else {
-      this.global.activateCurrentNavLink(
-        clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
-      );
-      window.dispatchEvent(
-        new CustomEvent("dropdownOptClicked", { detail: clicked }),
-      );
-      this.isDropdown = false;
-    }
     this.global.flashBlackout();
     this.activeSequence = clicked.dataset.sequence;
     this.pauseWrapper.classList.remove("active");
@@ -61,6 +49,17 @@ class Sequence {
     this.activeTxtWrapper
       .querySelector(".intro-txt-wrap")
       .classList.add("active");
+    if (!this.isDropdown) {
+      this.global.activateCurrentNavLink(clicked);
+    } else {
+      this.global.activateCurrentNavLink(
+        clicked.closest(".nav_menu_link-wrap").querySelector(".nav_menu_link"),
+      );
+      window.dispatchEvent(
+        new CustomEvent("dropdownOptClicked", { detail: clicked }),
+      );
+      this.isDropdown = false;
+    }
   };
   handleEvent = (trigger, eventAction) => {
     const action = this.eventMap.get(eventAction);
@@ -71,8 +70,14 @@ class Sequence {
     }
   };
   setActiveSequenceDropdown = (clicked) => {
-    this.isDropdown = true;
-    this.initSection(clicked);
+    if ("isDropdownIcon" in clicked.dataset) {
+      window.dispatchEvent(
+        new CustomEvent("dropdownIconClicked", { detail: clicked }),
+      );
+    } else {
+      this.isDropdown = true;
+      this.initSection(clicked);
+    }
   };
   setAndShowActiveTxtWrapper = () => {
     this.allTxtWrappers.forEach((el) => el.classList.remove("active"));

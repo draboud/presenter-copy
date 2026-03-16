@@ -49,7 +49,6 @@ class Features {
     this.showIntroText();
     this.featuresCtrlBtns.classList.add("active");
     if (isIntro) return;
-
     this.playFeaturesIntro();
   };
   handleEvent = (trigger, eventAction) => {

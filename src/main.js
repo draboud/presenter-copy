@@ -1,4 +1,4 @@
-console.log("BRANCH: newModules-7");
+console.log("BRANCH: newModules-9");
 
 import { TIMING } from "./0-config";
 import * as global from "./0-global";
@@ -36,6 +36,12 @@ navContainer.addEventListener("click", function (e) {
   const targetModule = SECTIONS[activeSection];
   const action = clicked.dataset.clickAction;
   //1. Generic cleanup
+  if ("isDropdownIcon" in clicked.dataset) {
+    // Polymorphic call only - just toggling dropdown
+    targetModule.handleEvent(clicked, action);
+    return;
+  }
+  //dont flash if only clicking dropdown
   global.blackout.classList.remove("off");
   //2. State update
   global.setActiveSection(activeSection);
@@ -59,7 +65,13 @@ navContainer.addEventListener("mouseout", function (e) {
   const action = hovered.dataset.mouseoutAction;
   navbar.handleEvent(hovered, action);
 });
-//Custom event: sequence dropdown opt clicked
+//Custom event: nav dropdown icon clicked
+window.addEventListener("dropdownIconClicked", function (e) {
+  const clicked = e.detail;
+  if (!clicked) return;
+  navbar.toggleNavDropdown(clicked);
+});
+//Custom event: nav dropdown opt clicked
 window.addEventListener("dropdownOptClicked", function (e) {
   const clicked = e.detail;
   if (!clicked) return;
