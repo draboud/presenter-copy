@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 //.......................................................................
 //DEFINITIONS............................................................
-const navContainer = document.querySelector(".nav_component");
-const featuresContainer = document.querySelector(".section.features");
-const dataContainer = document.querySelector(".section.data");
-const sequenceContainer = document.querySelector(".section.sequence");
+const navContainer = global.query(".nav_component", document);
+const featuresContainer = global.query(".section.features", document);
+const dataContainer = global.query(".section.data", document);
+const sequenceContainer = global.query(".section.sequence", document);
 const navbar = new NavbarClass(global, navContainer);
 const features = new FeaturesClass(global, featuresContainer);
 const data = new DataClass(global, dataContainer);
