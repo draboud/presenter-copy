@@ -1,4 +1,3 @@
-console.log("TEST");
 import { TIMING } from "./0-config";
 import * as global from "./0-global";
 import NavbarClass from "./0-navbar";
