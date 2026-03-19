@@ -44,6 +44,7 @@ class Data {
       ["open-view-opts-menu", this.showViewOptsMenu],
       ["close-view-opts-menu", this.hideViewOptsMenu],
       ["toggle-img-txt", this.showCompImageOrText],
+      ["btn-hovered", this.global.toggleBtnHoverClass.bind(this)],
     ]);
     this.assetsMap = new Map([
       ["view-1", ASSETS["view-1"].desktop],

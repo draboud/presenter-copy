@@ -27,10 +27,10 @@ class Features {
     this.featuresTimer = null;
     this.featuresEndisCancelled = false;
     this.eventMap = new Map([
-      ["btn-hovered", this.global.toggleBtnHoverClass.bind(this)],
       ["open-features", this.initSection],
       ["play-ctrl-vid", this.playCtrlBtnVid],
       ["pause-ctrl-vid", this.pauseCtrlVid],
+      ["btn-hovered", this.global.toggleBtnHoverClass.bind(this)],
     ]);
   }
   //.......................................................................

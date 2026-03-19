@@ -32,6 +32,7 @@ class Sequence {
       ["open-sequence-index", this.setActiveSequenceDropdown],
       ["play-ctrl-vid", this.playCtrlBtnVid],
       ["pause-ctrl-vid", this.pauseCtrlVid],
+      ["btn-hovered", this.global.toggleBtnHoverClass.bind(this)],
     ]);
   }
   //.......................................................................
