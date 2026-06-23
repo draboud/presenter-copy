@@ -42,3 +42,4 @@ export const VIEW_START_END = Object.freeze({
     endTime: 5.65,
   },
 });
+export const LOOP_SEQUENCE_VIDS = true;

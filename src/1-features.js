@@ -14,10 +14,13 @@ class Features {
       ".vid-wrap.intro",
       this.container,
     );
-    this.featuresVidDiv = this.global.query(
-      ".vid-wrap.features",
-      this.container,
-    );
+    // this.featuresAllVidDiv = this.global.queryAll(
+    //   ".vid-wrap.features",
+    //   this.container,
+    // );
+    this.featuresAllVidWraps = [
+      ...this.global.queryAll(".vid-wrap", this.container),
+    ];
     this.pauseWrapper = this.global.query(".pause-wrap", this.container);
     this.featuresCtrlBtns = this.global.query(
       ".section-wrap-btns",
@@ -80,11 +83,21 @@ class Features {
   hideFeaturesIntroVidDiv = () => {
     this.featuresIntroVidDiv.classList.remove("active");
   };
-  showFeaturesVidDiv = () => {
-    this.featuresVidDiv.classList.add("active");
+  showFeaturesVidDiv = (feature) => {
+    this.featuresAllVidWraps.forEach((el) => {
+      if (el.classList.contains("intro")) return;
+      el.classList.remove("active");
+      if (el.dataset.feature === feature) {
+        this.acitveVidWrap = el;
+        this.acitveVidWrap.classList.add("active");
+      }
+    });
   };
   hideFeaturesVidDiv = () => {
-    this.featuresVidDiv.classList.remove("active");
+    this.featuresAllVidWraps.forEach((el) => {
+      if (el.classList.contains("intro")) return;
+      el.classList.remove("active");
+    });
   };
   playFeaturesIntro = () => {
     this.featuresBlackout.classList.remove("active");
@@ -110,12 +123,12 @@ class Features {
     this.global.enablePause();
     this.pauseWrapper.classList.remove("active");
     this.hideFeaturesIntroVidDiv();
-    this.showFeaturesVidDiv();
+    this.showFeaturesVidDiv(clickedCtrlBtn.dataset.feature);
     this.activeFeature = clickedCtrlBtn.dataset.feature;
     this.featuresEndisCancelled = false;
     this.hideAllText();
     this.showFeatureText();
-    this.global.setActiveVid();
+    this.global.setActiveVid(this.acitveVidWrap, null);
     this.global.setStartTime(clickedCtrlBtn.dataset.startTime);
     this.global.setEndTime(clickedCtrlBtn.dataset.endTime);
     this.global.activateCurrentBtn(clickedCtrlBtn);
